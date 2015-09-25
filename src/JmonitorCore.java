@@ -15,10 +15,10 @@ public class JmonitorCore {
 	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorNode> resultsQueue; 
 	
-	public JmonitorCore (String endpoint, String container, BlockingQueue <InputStream> q, String user, String passwd, String tenant) {
+	public JmonitorCore (String endpoint, String container, BlockingQueue <JmonitorNode> q, String user, String passwd, String tenant) {
 		OPENSTACK_URL_ENDPOINT = endpoint;
 		SWIFT_CONTAINER_NAME = container;
-		BlockingQueue <JmonitorNodde> ResultsQueue = q;
+		BlockingQueue <JmonitorNode> ResultsQueue = q;
 		
 		//instance of the Openstack Client
 		os = OSFactory.builder()
