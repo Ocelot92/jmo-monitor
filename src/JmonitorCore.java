@@ -13,12 +13,12 @@ public class JmonitorCore {
 	private final String SWIFT_CONTAINER_NAME;
 	private OSClient os;
 	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
-	private BlockingQueue <InputStream> resultsQueue; 
+	private BlockingQueue <JmonitorNode> resultsQueue; 
 	
 	public JmonitorCore (String endpoint, String container, BlockingQueue <InputStream> q, String user, String passwd, String tenant) {
 		OPENSTACK_URL_ENDPOINT = endpoint;
 		SWIFT_CONTAINER_NAME = container;
-		BlockingQueue <InputStream> ResultsQueue = q;
+		BlockingQueue <JmonitorNodde> ResultsQueue = q;
 		
 		//instance of the Openstack Client
 		os = OSFactory.builder()
@@ -31,15 +31,20 @@ public class JmonitorCore {
 	
 	public void StoreInSwift (){
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
-		
+		JmonitorNode aux = null;
 		try {
-			os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,"cpu_hog.txt" ,
-					Payloads.create(resultsQueue.take()), 
-					ObjectPutOptions.create()
-						.path("/test")
-					);
+			aux = resultsQueue.take();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+		if (aux != null) {
+			os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,"cpu_hog.txt" ,
+					Payloads.create(aux.getPayload()), 
+					ObjectPutOptions.create()
+					.path("/test/" + aux.getPlgName())
+					);
+		} else {
+			System.out.println("Error: trying to take a null JmonitorNode");
 		}
 	}
 	
