@@ -2,6 +2,8 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.common.Payloads;
@@ -12,7 +14,8 @@ public class JmonitorCore {
 	private final String OPENSTACK_URL_ENDPOINT;
 	private final String SWIFT_CONTAINER_NAME;
 	private OSClient os;
-	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
+	private List <IfcPlugin> plugins;
+//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorNode> resultsQueue; 
 	
 	public JmonitorCore (String endpoint, String container, BlockingQueue <JmonitorNode> q, String user, String passwd, String tenant) {
@@ -22,30 +25,39 @@ public class JmonitorCore {
 		
 		//instance of the Openstack Client
 		os = OSFactory.builder()
-				.endpoint(endpoint)
+				.endpoint(OPENSTACK_URL_ENDPOINT)
 				.credentials(user,passwd)
 				.tenantName(tenant)
 				.authenticate();
 		
 	}
 	
-	public void StoreInSwift (){
+	public void loadPlugins () {
+		
+	}
+	
+	public void runPlugins () {
+		
+	}
+	
+	public void storeInSwift (){//incomplete
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 		JmonitorNode aux = null;
+
 		try {
 			aux = resultsQueue.take();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		if (aux != null) {
-			os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,"cpu_hog.txt" ,
-					Payloads.create(aux.getPayload()), 
-					ObjectPutOptions.create()
-					.path("/test/" + aux.getPlgName())
-					);
-		} else {
-			System.out.println("Error: trying to take a null JmonitorNode");
-		}
+		
+		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,"cpu_hog.txt" ,
+				Payloads.create(aux.getPayload()), 
+				ObjectPutOptions.create()
+				.path("/test/" + aux.getPlgName())
+				);
+
+		System.out.println("Error: trying to take a null JmonitorNode");
+		
 	}
 	
 	
