@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +10,7 @@ import org.openstack4j.model.storage.object.options.ObjectPutOptions;
 import org.openstack4j.openstack.OSFactory;
 
 public class JmonitorCore {
-	private final String OPENSTACK_URL_ENDPOINT;
+	private final String OS_AUTH_ENDPOINT_URL;
 	private final String SWIFT_CONTAINER_NAME;
 	private OSClient os;
 	private List <IfcPlugin> plugins;
@@ -19,24 +18,16 @@ public class JmonitorCore {
 	private BlockingQueue <JmonitorNode> resultsQueue; 
 	
 	public JmonitorCore (String endpoint, String container, BlockingQueue <JmonitorNode> q, String user, String passwd, String tenant) {
-		OPENSTACK_URL_ENDPOINT = endpoint;
+		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
 		BlockingQueue <JmonitorNode> ResultsQueue = q;
 		
 		//instance of the Openstack Client
 		os = OSFactory.builder()
-				.endpoint(OPENSTACK_URL_ENDPOINT)
+				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
 				.tenantName(tenant)
 				.authenticate();
-		
-	}
-	
-	public void loadPlugins () {
-		
-	}
-	
-	public void runPlugins () {
 		
 	}
 	
@@ -58,7 +49,5 @@ public class JmonitorCore {
 
 		System.out.println("Error: trying to take a null JmonitorNode");
 		
-	}
-	
-	
+	}	
 }
