@@ -28,18 +28,16 @@ public class PluginClassLoader extends ClassLoader {
 					File f = new File (directory, classname);
 					int length = (int)f.length();
 					byte classbytes[] = new byte [length];
-					DataInputStream dis = new DataInputStream (new FileInputStream(f));
+					try (DataInputStream dis = new DataInputStream (new FileInputStream(f)) ) {;
 					dis.readFully(classbytes);
-					dis.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					c = defineClass(classname, classbytes, 0, length);
 				}
 			}
 
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return c;

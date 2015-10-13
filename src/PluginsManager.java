@@ -16,13 +16,15 @@ public class PluginsManager {
 		if (dir.exists() && dir.isDirectory()) {
 			String files []= dir.list();
 			for (int i=0; i < files.length; i++){
+				//check only for class files
 				if (files[i].endsWith(".class")) {
 					try {
-						Class<?> c = cl.loadClass(files[i].substring(0, files[i].indexOf('.')));
+						Class<?> clsLoaded = cl.loadClass(files[i].substring(files[i].indexOf('.')));
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
-					
+					//check if the class implements IfcPlugin
+					clsLoaded.
 				}
 			}
 		}
