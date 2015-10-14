@@ -1,5 +1,9 @@
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class PluginsManager {
 	private String directory;
@@ -7,11 +11,23 @@ public class PluginsManager {
 	
 	public PluginsManager (String dir){
 		directory = dir;
+		plugins = new LinkedList<IfcPlugin> ();
+	}
+	
+	public void runPlugins () {
+		Timer tmr = new Timer();
+		//create a task for each plugin and launch it
+		
+		for (int i = 0; i < plugins.size(); i++) {
+			//TimerTask task = new TimerTask();
+			tmr.scheduleAtFixedRate(task, 1000, 5000);
+		}
 	}
 	
 	public void loadPlugins (){
 		File dir = new File (System.getProperty("user.dir") + File.separator + directory);
 		ClassLoader cl = new PluginClassLoader(dir);
+		
 		//listing all dir's files
 		if (dir.exists() && dir.isDirectory()) {
 			String files []= dir.list();
