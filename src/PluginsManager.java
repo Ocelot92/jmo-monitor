@@ -19,7 +19,7 @@ public class PluginsManager {
 		//create a task for each plugin and launch it
 		
 		for (int i = 0; i < plugins.size(); i++) {
-			//TimerTask task = new TimerTask();
+			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
 			tmr.scheduleAtFixedRate(task, 1000, 5000);
 		}
 	}
