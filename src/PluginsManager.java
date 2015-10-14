@@ -20,7 +20,7 @@ public class PluginsManager {
 		
 		for (int i = 0; i < plugins.size(); i++) {
 			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
-			tmr.scheduleAtFixedRate(task, 1000, 5000);
+			tmr.scheduleAtFixedRate(task, 1000, plugins.get(i));
 		}
 	}
 	
