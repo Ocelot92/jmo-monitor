@@ -1,23 +1,24 @@
 import java.util.concurrent.BlockingQueue;
 
 abstract class IfcPlugin {
-	private final String name;
-	private final long rate;
-	private final BlockingQueue<IfcPlugin> monitorQueue;
+	private final String NAME;
+	private final long RATE;
+	private final BlockingQueue<JmonitorNode> monitorQueue;
 	
-	public IfcPlugin (String n, long r, BlockingQueue<IfcPlugin> q) {
-		name = n;
-		rate = r;
+	public IfcPlugin (BlockingQueue<JmonitorNode> q) {
 		monitorQueue = q;
 	}
 	
 	abstract public void monitoring ();
 	
 	public String getName() {
-		return name;
+		return NAME;
 	}
 	
 	public long getRate() {
-		return rate;
+		return RATE;
 	}
+	
+//Use this method to set the name and the rate at which exec the monitoring() method
+	abstract public void initPlugin (); 
 }

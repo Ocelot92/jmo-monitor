@@ -3,11 +3,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
 
 
 public class PluginsManager {
 	private String directory;
 	private List <IfcPlugin> plugins;
+//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
+	private BlockingQueue <JmonitorNode> resultsQueue; 
 	
 	public PluginsManager (String dir){
 		directory = dir;
@@ -43,7 +46,7 @@ public class PluginsManager {
 					//check if the class implements IfcPlugin
 					if (clsLoaded != null && checkClass(clsLoaded)){
 						try {
-							IfcPlugin plg = (IfcPlugin) clsLoaded.newInstance();
+							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(resultsQueue).newInstance();
 							plugins.add(plg);
 						} catch (InstantiationException | IllegalAccessException e) {
 							e.printStackTrace();
