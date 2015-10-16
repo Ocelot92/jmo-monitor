@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.common.Payloads;
@@ -13,14 +14,11 @@ public class JmonitorCore {
 	private final String OS_AUTH_ENDPOINT_URL;
 	private final String SWIFT_CONTAINER_NAME;
 	private OSClient os;
-	private List <IfcPlugin> plugins;
-//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
-	private BlockingQueue <JmonitorNode> resultsQueue; 
+	private PluginsManager pm;
 	
 	public JmonitorCore (String endpoint, String container, BlockingQueue <JmonitorNode> q, String user, String passwd, String tenant) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
-		BlockingQueue <JmonitorNode> ResultsQueue = q;
 		
 		//instance of the Openstack Client
 		os = OSFactory.builder()
@@ -28,7 +26,6 @@ public class JmonitorCore {
 				.credentials(user,passwd)
 				.tenantName(tenant)
 				.authenticate();
-		
 	}
 	
 	public void storeInSwift (){//incomplete
@@ -36,7 +33,7 @@ public class JmonitorCore {
 		JmonitorNode aux = null;
 
 		try {
-			aux = resultsQueue.take();
+			aux = pm.getResultsQueue().take();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

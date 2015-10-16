@@ -58,6 +58,9 @@ public class PluginsManager {
 		}	
 	}
 	
+	public BlockingQueue<JmonitorNode> getResultsQueue () {
+		return resultsQueue;
+	}
 	//return true if the class extends IfcPlugin
 	private boolean checkClass (Class<?>  c) {
 		if (IfcPlugin.class.isAssignableFrom(c))
