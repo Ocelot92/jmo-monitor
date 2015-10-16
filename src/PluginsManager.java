@@ -16,11 +16,11 @@ public class PluginsManager {
 	
 	public void runPlugins () {
 		Timer tmr = new Timer();
-		//create a task for each plugin and launch it
 		
+		//create a task for each plugin and launch it
 		for (int i = 0; i < plugins.size(); i++) {
 			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
-			tmr.scheduleAtFixedRate(task, 1000, plugins.get(i));
+			tmr.scheduleAtFixedRate(task, 1000, plugins.get(i).getRate());
 		}
 	}
 	
@@ -43,8 +43,8 @@ public class PluginsManager {
 					//check if the class implements IfcPlugin
 					if (clsLoaded != null && checkClass(clsLoaded)){
 						try {
-							IfcPlugin iplg = (IfcPlugin) clsLoaded.newInstance();
-							plugins.add(iplg);
+							IfcPlugin plg = (IfcPlugin) clsLoaded.newInstance();
+							plugins.add(plg);
 						} catch (InstantiationException | IllegalAccessException e) {
 							e.printStackTrace();
 						}
@@ -57,21 +57,10 @@ public class PluginsManager {
 		
 	}
 	
-	//return true if the class implements IfcPlugin
+	//return true if the class extends IfcPlugin
 	private boolean checkClass (Class <?> c) {
-		Class<?> interfaces [] = c.getInterfaces();
-		for (int i = 0; i < interfaces.length; i++){
-			//check if the class implements IfcPlugin
-			if ( checkInterface(interfaces[i]) )
-				return true;
-		}
-		return false;
-	}
-	
-	private boolean checkInterface (Class<?> intrfc) {
-		if (intrfc.getName().equals("IfcPlugin"))
+		if (IfcPlugin.class.isAssignableFrom(c))
 			return true;
-		else
-			return false;
+		return false;
 	}
 }
