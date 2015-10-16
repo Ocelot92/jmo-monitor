@@ -7,6 +7,8 @@ abstract class IfcPlugin {
 	
 	public IfcPlugin (BlockingQueue<JmonitorNode> q) {
 		monitorQueue = q;
+		NAME = null;
+		RATE = 0;
 	}
 	
 	abstract public void monitoring ();

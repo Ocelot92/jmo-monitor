@@ -47,6 +47,7 @@ public class PluginsManager {
 					if (clsLoaded != null && checkClass(clsLoaded)){
 						try {
 							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(IfcPlugin.class).newInstance(resultsQueue);
+							plg.initPlugin();
 							plugins.add(plg);
 						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 							e.printStackTrace();
