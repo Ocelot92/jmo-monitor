@@ -1,10 +1,10 @@
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
-
 
 public class PluginsManager {
 	private String directory;
@@ -46,9 +46,9 @@ public class PluginsManager {
 					//check if the class implements IfcPlugin
 					if (clsLoaded != null && checkClass(clsLoaded)){
 						try {
-							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(resultsQueue).newInstance();
+							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(IfcPlugin.class).newInstance(resultsQueue);
 							plugins.add(plg);
-						} catch (InstantiationException | IllegalAccessException e) {
+						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 							e.printStackTrace();
 						}
 						
@@ -61,7 +61,7 @@ public class PluginsManager {
 	}
 	
 	//return true if the class extends IfcPlugin
-	private boolean checkClass (Class <?> c) {
+	private boolean checkClass (Class<?>  c) {
 		if (IfcPlugin.class.isAssignableFrom(c))
 			return true;
 		return false;
