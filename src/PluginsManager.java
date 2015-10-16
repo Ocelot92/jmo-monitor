@@ -52,13 +52,10 @@ public class PluginsManager {
 						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 							e.printStackTrace();
 						}
-						
 					}
 				}
 			}
-		}
-		
-		
+		}	
 	}
 	
 	//return true if the class extends IfcPlugin
