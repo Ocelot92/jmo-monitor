@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,12 +16,12 @@ public class JmonitorCore {
 	private final String SWIFT_CONTAINER_NAME;
 	private OSClient os;
 	private PluginsManager pm;
+	private Date now;
 	
 	public JmonitorCore (String endpoint, String container, BlockingQueue <JmonitorNode> q, String user, String passwd, String tenant) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
-		
-		//instance of the Openstack Client
+		now = new Date ();
 		os = OSFactory.builder()
 				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
@@ -45,6 +46,10 @@ public class JmonitorCore {
 				);
 
 		System.out.println("Error: trying to take a null JmonitorNode");
+	}
+	
+	private InputStream formatResult (InputStream is) {
 		
-	}	
+		return is;
+	}
 }
