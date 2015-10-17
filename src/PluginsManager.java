@@ -44,7 +44,7 @@ public class PluginsManager {
 						e.printStackTrace();
 					}
 					//check if the class implements IfcPlugin
-					if (clsLoaded != null && checkClass(clsLoaded)){
+					if (clsLoaded != null && IfcPlugin.class.isAssignableFrom(clsLoaded) ){
 						try {
 							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(IfcPlugin.class).newInstance(resultsQueue);
 							plg.initPlugin();
@@ -61,10 +61,5 @@ public class PluginsManager {
 	public BlockingQueue<JmonitorNode> getResultsQueue () {
 		return resultsQueue;
 	}
-	//return true if the class extends IfcPlugin
-	private boolean checkClass (Class<?>  c) {
-		if (IfcPlugin.class.isAssignableFrom(c))
-			return true;
-		return false;
-	}
+	
 }
