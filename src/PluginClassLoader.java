@@ -11,6 +11,13 @@ public class PluginClassLoader extends ClassLoader {
 		directory = dir;
 	}
 	
+//Just a convenient call to the 2-args loadClass
+	@Override
+	public Class<?> loadClass (String name) throws ClassNotFoundException { 
+	      return loadClass(name, true); 
+	}
+	
+	@Override
 	public Class<?> loadClass (String classname, boolean resolve){
 		Class<?> c = null;
 

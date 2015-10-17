@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import org.openstack4j.api.OSClient;
@@ -48,8 +49,12 @@ public class JmonitorCore {
 		System.out.println("Error: trying to take a null JmonitorNode");
 	}
 	
+//adds date info at the beginning of an InputStream
 	private InputStream formatResult (InputStream is) {
-		
+		//Just a Scanner trick to convert InputStream to String
+		Scanner scan = new Scanner(is).useDelimiter("\\A");
+	    String str =  scan.hasNext() ? scan.next() : "";
+	    str = now + str
 		return is;
 	}
 }

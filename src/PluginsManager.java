@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class PluginsManager {
@@ -11,7 +12,7 @@ public class PluginsManager {
 	private List <IfcPlugin> plugins;
 //The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorNode> resultsQueue; 
-	
+	private final int QUEUE_CAPACITY = 10;
 	public PluginsManager (String dir){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
@@ -19,11 +20,11 @@ public class PluginsManager {
 	
 	public void runPlugins () {
 		Timer tmr = new Timer();
-		
-		//create a task for each plugin and launch it
+		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+		//creates a task for each plugin and launches it
 		for (int i = 0; i < plugins.size(); i++) {
 			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
-			tmr.scheduleAtFixedRate(task, 1000, plugins.get(i).getRate());
+			tmr.scheduleAtFixedRate(task, 1000, plugins.get(i).getRate() );
 		}
 	}
 	
