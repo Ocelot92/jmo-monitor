@@ -21,6 +21,6 @@ abstract class IfcPlugin {
 		return RATE;
 	}
 	
-//Use this method to set the name and the rate at which exec the monitoring() method
+//Use this method to set the plugin name and the rate at which call the monitoring() method
 	abstract public void initPlugin (); 
 }

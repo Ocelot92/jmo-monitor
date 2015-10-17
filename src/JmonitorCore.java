@@ -1,3 +1,4 @@
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,18 +33,18 @@ public class JmonitorCore {
 	
 	public void storeInSwift (){//incomplete
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
-		JmonitorNode aux = null;
+		JmonitorNode node = null;
 
 		try {
-			aux = pm.getResultsQueue().take();
+			node = pm.getResultsQueue().take();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
 		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,"cpu_hog.txt" ,
-				Payloads.create(aux.getPayload()), 
+				Payloads.create(node.getPayload()), 
 				ObjectPutOptions.create()
-				.path("/test/" + aux.getPlgName())
+				.path("/test/" + node.getPlgName())
 				);
 
 		System.out.println("Error: trying to take a null JmonitorNode");
@@ -54,7 +55,9 @@ public class JmonitorCore {
 		//Just a Scanner trick to convert InputStream to String
 		Scanner scan = new Scanner(is).useDelimiter("\\A");
 	    String str =  scan.hasNext() ? scan.next() : "";
-	    str = now + str
+	    scan.close();
+	    str = now + ": " + str;
+		is = new ByteArrayInputStream(str.getBytes());
 		return is;
 	}
 }
