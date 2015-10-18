@@ -1,13 +1,8 @@
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.common.Payloads;
 import org.openstack4j.model.storage.object.options.ObjectPutOptions;
@@ -19,13 +14,12 @@ public class JmonitorCore {
 	private OSClient os;
 	private PluginsManager pm;
 	private Date now;
-	private String dir = System.getProperty("user.dir") + "/plugins";
 	
-	public JmonitorCore (String endpoint, String container, BlockingQueue <JmonitorNode> q, String user, String passwd, String tenant) {
+	public JmonitorCore (String endpoint, String container, String user, String passwd, String tenant, String dirplg) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
 		now = new Date ();
-		pm = new PluginsManager (dir);//directory plugins hardcoded
+		pm = new PluginsManager (dirplg);
 		os = OSFactory.builder()
 				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
@@ -53,13 +47,18 @@ public class JmonitorCore {
 				);
 	}
 	
+	public void startMonitoring (){
+		pm.runPlugins();
+	}
+	
 //adds date info at the beginning of an InputStream
 	private InputStream formatResult (InputStream is) {
 		//Just a Scanner trick to convert InputStream to String
 		Scanner scan = new Scanner(is).useDelimiter("\\A");
 	    String str =  scan.hasNext() ? scan.next() : "";
 	    scan.close();
-	    str = now + ": " + str;
+	    
+	    str = now + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
 		return is;
 	}
