@@ -31,7 +31,7 @@ public class JmonitorCore {
 				.authenticate();
 	}
 	
-	public void storeInSwift (){//incomplete
+	public void storeInSwift (){
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 		JmonitorNode node = null;
 
@@ -41,13 +41,12 @@ public class JmonitorCore {
 			e.printStackTrace();
 		}
 		
-		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,"cpu_hog.txt" ,
+		String plgname = node.getPlgName();
+		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,
 				Payloads.create(node.getPayload()), 
 				ObjectPutOptions.create()
-				.path("/test/" + node.getPlgName())
+				.path("/" + plgname + "/" + node.getPlgName())
 				);
-
-		System.out.println("Error: trying to take a null JmonitorNode");
 	}
 	
 //adds date info at the beginning of an InputStream
