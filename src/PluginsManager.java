@@ -13,6 +13,7 @@ public class PluginsManager {
 //The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorNode> resultsQueue; 
 	private final int QUEUE_CAPACITY = 10;
+	private Timer tmr;
 	  
 	public PluginsManager (String dir){
 		directory = dir;
@@ -20,7 +21,7 @@ public class PluginsManager {
 	}
 	
 	public void runPlugins () {
-		Timer tmr = new Timer();
+		tmr = new Timer();
 		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 		//creates a task for each plugin and launches it
 		for (int i = 0; i < plugins.size(); i++) {
@@ -62,6 +63,10 @@ public class PluginsManager {
 	
 	public BlockingQueue<JmonitorNode> getResultsQueue () {
 		return resultsQueue;
+	}
+	
+	public Timer getTmr() {
+		return tmr;
 	}
 	
 }

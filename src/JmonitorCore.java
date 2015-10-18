@@ -21,6 +21,10 @@ public class JmonitorCore {
 		SWIFT_CONTAINER_NAME = container;
 		now = new Date ();
 		pm = new PluginsManager (dirplg);
+		
+		//loadPlugins in the List without running them
+		pm.loadPlugins();
+		
 		os = OSFactory.builder()
 				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
@@ -56,8 +60,20 @@ public class JmonitorCore {
 	}
 	
 	public void startMonitoring (){
+		Scanner scan = new Scanner (System.in);
 		
 		pm.runPlugins();
+		
+		String exit = "";
+		System.out.println("Monitoring session started."
+				+ "Type q to finish.");
+		
+		while (!exit.equals("q"))
+			exit = scan.nextLine();
+		
+		scan.close();
+		pm.getTmr().cancel();
+		pm.getTmr().purge();
 	}
 	
 //adds date info at the beginning of an InputStream
