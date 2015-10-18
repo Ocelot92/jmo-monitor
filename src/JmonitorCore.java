@@ -19,11 +19,13 @@ public class JmonitorCore {
 	private OSClient os;
 	private PluginsManager pm;
 	private Date now;
+	private String dir = System.getProperty("user.dir") + "/plugins";
 	
 	public JmonitorCore (String endpoint, String container, BlockingQueue <JmonitorNode> q, String user, String passwd, String tenant) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
 		now = new Date ();
+		pm = new PluginsManager (dir);//directory plugins hardcoded
 		os = OSFactory.builder()
 				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
@@ -40,6 +42,8 @@ public class JmonitorCore {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		formatResult(node.getPayload());
 		
 		String plgname = node.getPlgName();
 		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,

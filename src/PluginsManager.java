@@ -13,6 +13,7 @@ public class PluginsManager {
 //The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorNode> resultsQueue; 
 	private final int QUEUE_CAPACITY = 10;
+	  
 	public PluginsManager (String dir){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
