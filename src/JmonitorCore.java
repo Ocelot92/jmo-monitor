@@ -1,5 +1,6 @@
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Scanner;
@@ -45,9 +46,17 @@ public class JmonitorCore {
 				ObjectPutOptions.create()
 				.path("/" + plgname + "/" + node.getPlgName())
 				);
+		
+		//close InputStreams of the nodes took from BlockingQueue
+		try {
+			node.getPayload().close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void startMonitoring (){
+		
 		pm.runPlugins();
 	}
 	
