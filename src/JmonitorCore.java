@@ -22,9 +22,6 @@ public class JmonitorCore {
 		now = new Date ();
 		pm = new PluginsManager (dirplg);
 		
-		//loadPlugins in the List without running them
-		pm.loadPlugins();
-		
 		os = OSFactory.builder()
 				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
@@ -72,6 +69,10 @@ public class JmonitorCore {
 			exit = scan.nextLine();
 		
 		scan.close();
+		endMonitoring();
+	}
+
+	private void endMonitoring() {
 		pm.getTmr().cancel();
 		pm.getTmr().purge();
 	}

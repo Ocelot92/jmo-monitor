@@ -18,6 +18,8 @@ public class PluginsManager {
 	public PluginsManager (String dir){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
+		
+		loadPlugins();
 	}
 	
 	public void runPlugins () {
