@@ -61,7 +61,9 @@ public class PluginsManager {
 					}
 				}
 			}
-		}	
+		}else{
+			System.out.println("Wrong plugins path!");
+		}
 	}
 	
 	public BlockingQueue<JmonitorNode> getResultsQueue () {
