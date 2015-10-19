@@ -8,7 +8,7 @@ public class Main {
 		String user = "facebook961203343944138";
 		String passwd = "FtVuoqcq5T2c9dV6";
 		String tenant = "facebook961203343944138";
-		String dirplg = System.getProperty("user.dir") + File.separator + "plugins";
+		String dirplg = "plugins";
 		
 		JmonitorCore monitor = new JmonitorCore(endpoint, container, user, passwd, tenant, dirplg);
 		monitor.startMonitoring();
