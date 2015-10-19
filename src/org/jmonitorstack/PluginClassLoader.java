@@ -22,30 +22,28 @@ public class PluginClassLoader extends ClassLoader {
 	public Class<?> loadClass (String classname, boolean resolve){
 		Class<?> c = null;
 
-		try {
-			//check if the class is already loaded
-			c = findLoadedClass(classname);
-			//... otherwise check if it's a system class
-			if (c == null) {
+		//check if the class is already loaded
+		c = findLoadedClass(classname);
+		//... otherwise check if it's a system class
+		if (c == null) {
+			try {
 				c = findSystemClass(classname);
-				if ( c == null) {
-					//... otherwise load it from the plugin directory
-					
-					classname += ".class";
-					File f = new File (directory, classname);
-					int length = (int)f.length();
-					byte classbytes[] = new byte [length];
-					try (DataInputStream dis = new DataInputStream (new FileInputStream(f)) ) {;
-					dis.readFully(classbytes);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					c = defineClass(classname, classbytes, 0, length);
-				}
-			}
+			} catch (ClassNotFoundException e1) {}
+			if ( c == null) {
+				//... otherwise load it from the plugin directory
 
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+				classname += ".class";
+				File f = new File (directory, classname);
+				int length = (int)f.length();
+				byte classbytes[] = new byte [length];
+				
+				try (DataInputStream dis = new DataInputStream (new FileInputStream(f)) ) {
+					dis.readFully(classbytes);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				c = defineClass(classname, classbytes, 0, length);
+			}
 		}
 		if (resolve)resolveClass(c);
 		return c;
