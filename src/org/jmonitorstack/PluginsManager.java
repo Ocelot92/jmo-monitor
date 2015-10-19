@@ -45,7 +45,7 @@ public class PluginsManager {
 				if (files[i].endsWith(".class")) {
 					Class<?> clsLoaded = null;
 					try {
-						clsLoaded = cl.loadClass(files[i].substring(files[i].indexOf('.')));
+						clsLoaded = cl.loadClass(files[i].substring(0,files[i].indexOf('.')));
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
