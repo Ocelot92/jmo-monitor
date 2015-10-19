@@ -1,3 +1,4 @@
+package org.jmonitorstack;
 import java.util.concurrent.BlockingQueue;
 
 abstract class IfcPlugin {

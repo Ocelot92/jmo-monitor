@@ -1,3 +1,4 @@
+package org.jmonitorstack;
 import java.util.TimerTask;
 
 public class PluginScheduler extends TimerTask {

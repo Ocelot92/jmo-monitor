@@ -1,3 +1,4 @@
+package org.jmonitorstack;
 import java.io.InputStream;
 
 public class JmonitorNode {

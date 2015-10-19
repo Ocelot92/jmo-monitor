@@ -1,3 +1,4 @@
+package org.jmonitorstack;
 import java.io.File;
 
 public class Main {
@@ -10,7 +11,7 @@ public class Main {
 		String dirplg = System.getProperty("user.dir") + File.separator + "plugins";
 		
 		JmonitorCore monitor = new JmonitorCore(endpoint, container, user, passwd, tenant, dirplg);
-		
+		monitor.startMonitoring();
 		
 	}
 }
