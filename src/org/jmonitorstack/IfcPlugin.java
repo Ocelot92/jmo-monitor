@@ -1,7 +1,7 @@
 package org.jmonitorstack;
 import java.util.concurrent.BlockingQueue;
 
-abstract class IfcPlugin {
+abstract public class IfcPlugin {
 	private final String NAME;
 	private final long RATE;
 	private final BlockingQueue<JmonitorNode> monitorQueue;
