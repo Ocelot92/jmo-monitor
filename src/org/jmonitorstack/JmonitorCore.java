@@ -63,14 +63,15 @@ public class JmonitorCore {
 		pm.runPlugins();
 		
 		String exit = "";
-		System.out.println("Monitoring session started."
+		System.out.println("Monitoring session started.\n"
 				+ "Type q to finish.");
-		
-		while (!exit.equals("q"))
+		while (true)
+			storeInSwift();
+		/*while (!exit.equals("q"))
 			exit = scan.nextLine();
 		
 		scan.close();
-		endMonitoring();
+		endMonitoring();*/
 	}
 
 	private void endMonitoring() {

@@ -38,7 +38,7 @@ public class PluginsManager {
 		ClassLoader cl = new PluginClassLoader(dir);
 		
 		//listing all dir's files
-		if (dir.exists() && dir.isDirectory()) {
+		if (dir.getAbsoluteFile().exists() && dir.getAbsoluteFile().isDirectory()) {
 			String files []= dir.list();
 			for (int i=0; i < files.length; i++){
 				//check only for class files
