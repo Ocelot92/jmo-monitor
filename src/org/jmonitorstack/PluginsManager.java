@@ -20,7 +20,6 @@ public class PluginsManager {
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
 		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-		loadPlugins();
 	}
 	
 	public void runPlugins () {
