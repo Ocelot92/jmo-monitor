@@ -31,6 +31,7 @@ public class JmonitorCore {
 	}
 	
 	public void storeInSwift (){
+		
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 		JmonitorNode node = null;
 
@@ -66,6 +67,7 @@ public class JmonitorCore {
 		System.out.println("Monitoring session started.\n"
 				+ "Type q to finish.");
 		while (true)
+			
 			storeInSwift();
 		/*while (!exit.equals("q"))
 			exit = scan.nextLine();

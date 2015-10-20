@@ -19,45 +19,35 @@ public class PluginClassLoader extends ClassLoader {
 	}
 	
 	@Override
-	public Class<?> loadClass (String classname, boolean resolve) throws ClassNotFoundException {
+	public Class<?> loadClass (String classname, boolean resolve){
 		Class<?> c = null;
-		try {
-			//check if the class is already loaded
-			c = findLoadedClass(classname);
 
-			//... otherwise check if it's a system class
-			if (c == null) {
-				try{
-					System.out.println("i'm above systemclass");
-					c = findSystemClass(classname);
-				}catch (Exception ex){}
-				if ( c == null) {
-					//... otherwise load it from the plugin directory
-					
-					String aux = classname;
-					classname += ".class";
-
-					File f = new File (directory, classname);
-					// Get the length of the class file, allocate an array of bytes for
-					// it, and read it in all at once.
-					int length = (int)f.length();
-					byte classbytes[] = new byte [length];
-					try (DataInputStream dis = new DataInputStream (new FileInputStream(f)) ) {
-						dis.readFully(classbytes);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					System.out.println(classname + " length: " + length + " classbytes[1] " + classbytes[1] );
-					c = defineClass(aux, classbytes, 0, length);
-				}
+		//check if the class is already loaded
+		c = findLoadedClass(classname);
+		//... otherwise check if it's a system class
+		if (c == null) {
+			try {
+				c = findSystemClass(classname);
+			} catch (ClassNotFoundException e1) {}
+			if ( c == null) {
+				//... otherwise load it from the plugin directory
 				
+				String filename = classname;
+				filename += ".class";
+				File f = new File (directory, filename);
+				int length = (int)f.length();
+				byte classbytes[] = new byte [length];
+				
+				try (DataInputStream dis = new DataInputStream (new FileInputStream(f)) ) {
+					dis.readFully(classbytes);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				c = defineClass(classname, classbytes, 0, length);
 				if (resolve)resolveClass(c);
-				System.out.println("classe " + classname + "caricata");
-				return c;
+				System.out.println("plugin " + classname + " loaded");
 			}
-		} catch (Exception ex) {throw new ClassNotFoundException(ex.toString()); }
-		System.out.println("classe non caricata");
+		}
 		return c;
-	}
+	}	
 }
-

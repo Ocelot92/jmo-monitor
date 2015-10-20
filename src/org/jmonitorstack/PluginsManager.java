@@ -19,13 +19,12 @@ public class PluginsManager {
 	public PluginsManager (String dir){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
-		
+		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 		loadPlugins();
 	}
 	
 	public void runPlugins () {
 		tmr = new Timer();
-		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 		//creates a task for each plugin and launches it
 		for (int i = 0; i < plugins.size(); i++) {
 			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
@@ -52,7 +51,7 @@ public class PluginsManager {
 					//check if the class implements IfcPlugin
 					if (clsLoaded != null && IfcPlugin.class.isAssignableFrom(clsLoaded) ){
 						try {
-							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(IfcPlugin.class).newInstance(resultsQueue);
+							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(BlockingQueue.class).newInstance(resultsQueue);
 							plg.initPlugin();
 							plugins.add(plg);
 						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
