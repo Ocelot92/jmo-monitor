@@ -32,7 +32,7 @@ public class JmonitorCore {
 	
 	public void storeInSwift (){
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
-		JmonitorNode msg = null;
+		JmonitorMessage msg = null;
 
 		try {
 			msg = pm.getResultsQueue().take();

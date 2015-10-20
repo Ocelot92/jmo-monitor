@@ -12,7 +12,7 @@ public class PluginsManager {
 	private String directory;
 	private List <IfcPlugin> plugins;
 //The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
-	private BlockingQueue <JmonitorNode> resultsQueue; 
+	private BlockingQueue <JmonitorMessage> resultsQueue; 
 	private final int QUEUE_CAPACITY = 10;
 	private Timer tmr;
 	  
@@ -66,7 +66,7 @@ public class PluginsManager {
 		}
 	}
 	
-	public BlockingQueue<JmonitorNode> getResultsQueue () {
+	public BlockingQueue<JmonitorMessage> getResultsQueue () {
 		return resultsQueue;
 	}
 	

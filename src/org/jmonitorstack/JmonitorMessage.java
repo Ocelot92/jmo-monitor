@@ -1,11 +1,11 @@
 package org.jmonitorstack;
 import java.io.InputStream;
 
-public class JmonitorNode {
+public class JmonitorMessage {
 	private InputStream payload;
 	private IfcPlugin plg;
 	
-	public JmonitorNode (InputStream is, IfcPlugin p){
+	public JmonitorMessage (InputStream is, IfcPlugin p){
 		payload = is;
 		plg = p;
 	}
