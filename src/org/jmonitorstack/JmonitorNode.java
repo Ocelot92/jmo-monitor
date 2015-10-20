@@ -3,19 +3,19 @@ import java.io.InputStream;
 
 public class JmonitorNode {
 	private InputStream payload;
-	private String plgName;
+	private IfcPlugin plg;
 	
-	public JmonitorNode (InputStream is, String name){
+	public JmonitorNode (InputStream is, IfcPlugin p){
 		payload = is;
-		plgName = name;
+		plg = p;
 	}
 	
-	public void setPlgName (String x) {
-		plgName = x;
+	public void setPlg (IfcPlugin x) {
+		plg = x;
 	}
 	
-	public String getPlgName () {
-		return plgName;
+	public IfcPlugin getPlg () {
+		return plg;
 	}
 	
 	public void setPayload (InputStream x) {
