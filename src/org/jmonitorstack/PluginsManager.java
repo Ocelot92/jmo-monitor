@@ -52,7 +52,7 @@ public class PluginsManager {
 					//check if the class implements IfcPlugin
 					if (clsLoaded != null && IfcPlugin.class.isAssignableFrom(clsLoaded) ){
 						try {
-							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(resultsQueue.getClass()).newInstance(resultsQueue);
+							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(BlockingQueue.class).newInstance(resultsQueue);
 							plg.initPlugin();
 							plugins.add(plg);
 							System.out.println("Plugin " + plg.getName() + " loaded successfully");
