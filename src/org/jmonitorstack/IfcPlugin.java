@@ -4,9 +4,9 @@ import java.util.concurrent.BlockingQueue;
 abstract public class IfcPlugin {
 	protected String name;
 	protected long rate;
-	protected BlockingQueue<JmonitorNode> monitorQueue;
+	protected BlockingQueue<JmonitorMessage> monitorQueue;
 	
-	public IfcPlugin (BlockingQueue<JmonitorNode> q) {
+	public IfcPlugin (BlockingQueue<JmonitorMessage> q) {
 		monitorQueue = q;
 	}
 	

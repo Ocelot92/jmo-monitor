@@ -35,6 +35,9 @@ public class PluginClassLoader extends ClassLoader {
 				String filename = classname;
 				filename += ".class";
 				File f = new File (directory, filename);
+
+				String filename = classname + ".class";
+				File f = new File (directory, filename);
 				int length = (int)f.length();
 				byte classbytes[] = new byte [length];
 				

@@ -33,26 +33,26 @@ public class JmonitorCore {
 	public void storeInSwift (){
 		
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
-		JmonitorNode node = null;
+		JmonitorMessage msg = null;
 
 		try {
-			node = pm.getResultsQueue().take();
+			msg = pm.getResultsQueue().take();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
-		formatResult(node.getPayload());
+		formatResult(msg.getPayload());
 		
-		String plgname = node.getPlgName();
+		String plgname = msg.getPlg().getName();
 		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,
-				Payloads.create(node.getPayload()), 
+				Payloads.create(msg.getPayload()), 
 				ObjectPutOptions.create()
-				.path("/" + plgname + "/" + node.getPlgName())
+				.path("/" + plgname + "/" + msg.getPlg().getName())
 				);
 		
 		//close InputStreams of the nodes took from BlockingQueue
 		try {
-			node.getPayload().close();
+			msg.getPayload().close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -60,6 +60,10 @@ public class JmonitorCore {
 	
 	public void startMonitoring (){
 		Scanner scan = new Scanner (System.in);
+<<<<<<< HEAD
+=======
+		
+>>>>>>> refs/heads/master
 		pm.loadPlugins();
 		pm.runPlugins();
 		
