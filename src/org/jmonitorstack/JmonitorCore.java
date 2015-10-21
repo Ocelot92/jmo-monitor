@@ -60,10 +60,7 @@ public class JmonitorCore {
 	
 	public void startMonitoring (){
 		Scanner scan = new Scanner (System.in);
-<<<<<<< HEAD
-=======
-		
->>>>>>> refs/heads/master
+
 		pm.loadPlugins();
 		pm.runPlugins();
 		

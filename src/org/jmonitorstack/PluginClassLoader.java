@@ -12,7 +12,10 @@ public class PluginClassLoader extends ClassLoader {
 		directory = dir;
 	}
 	
-//Just a convenient call to the 2-args loadClass
+/*Just a convenient call to the 2-args loadClass
+ * (non-Javadoc)
+ * @see java.lang.ClassLoader#loadClass(java.lang.String)
+ */
 	@Override
 	public Class<?> loadClass (String name) throws ClassNotFoundException { 
 	      return loadClass(name, true); 
@@ -32,9 +35,6 @@ public class PluginClassLoader extends ClassLoader {
 			if ( c == null) {
 				//... otherwise load it from the plugin directory
 				
-				String filename = classname;
-				filename += ".class";
-				File f = new File (directory, filename);
 
 				String filename = classname + ".class";
 				File f = new File (directory, filename);
