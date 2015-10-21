@@ -41,40 +41,36 @@ public class JmonitorCore {
 			e.printStackTrace();
 		}
 		
-		formatResult(msg.getPayload());
-		
 		String plgname = msg.getPlg().getName();
+		InputStream payload = msg.getPayload();
+		
+		formatResult(payload);
+		
 		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,
-				Payloads.create(msg.getPayload()), 
+				Payloads.create(payload), 
 				ObjectPutOptions.create()
-				.path("/" + plgname + "/" + msg.getPlg().getName())
+				 .path("/" + plgname)
 				);
 		
-		//close InputStreams of the nodes took from BlockingQueue
+		
+		//close InputStream of the message took from BlockingQueue
 		try {
-			msg.getPayload().close();
+			payload.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void startMonitoring (){
-		Scanner scan = new Scanner (System.in);
-
 		pm.loadPlugins();
 		pm.runPlugins();
 		
-		String exit = "";
+		
 		System.out.println("Monitoring session started.\n"
 				+ "Type q to finish.");
-		while (true)
-			
+		//while (true)
 			storeInSwift();
-		/*while (!exit.equals("q"))
-			exit = scan.nextLine();
 		
-		scan.close();
-		endMonitoring();*/
 	}
 
 	private void endMonitoring() {
@@ -82,12 +78,16 @@ public class JmonitorCore {
 		pm.getTmr().purge();
 	}
 	
-//adds date info at the beginning of an InputStream
+/*
+ * This method format a given InputStream by adding  date information through the "Date now" attribute.
+ * ATTENTION: if you close the scanner you'll close the stream too failing the store operation on Swift.
+ */
 	private InputStream formatResult (InputStream is) {
 		//Just a Scanner trick to convert InputStream to String
-		Scanner scan = new Scanner(is).useDelimiter("\\A");
+		Scanner scan = new Scanner(is);
+		scan.useDelimiter("\\A");
 	    String str =  scan.hasNext() ? scan.next() : "";
-	    scan.close();
+	   
 	    
 	    str = now + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
