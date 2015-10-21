@@ -19,13 +19,11 @@ public class PluginsManager {
 	public PluginsManager (String dir){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
-		
-		loadPlugins();
+		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 	}
 	
 	public void runPlugins () {
 		tmr = new Timer();
-		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 		//creates a task for each plugin and launches it
 		for (int i = 0; i < plugins.size(); i++) {
 			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
