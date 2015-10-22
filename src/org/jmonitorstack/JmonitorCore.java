@@ -44,7 +44,7 @@ public class JmonitorCore {
 		String plgname = msg.getPlg().getName();
 		InputStream payload = msg.getPayload();
 		
-		formatResult(payload);
+		payload = formatResult(payload);
 		
 		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,
 				Payloads.create(payload), 
@@ -88,7 +88,6 @@ public class JmonitorCore {
 		scan.useDelimiter("\\A");
 	    String str =  scan.hasNext() ? scan.next() : "";
 	   
-	    
 	    str = now + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
 		return is;
