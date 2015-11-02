@@ -1,12 +1,17 @@
 package org.jmonitorstack;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.Scanner;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.common.Payloads;
+import org.openstack4j.model.storage.block.options.DownloadOptions;
+import org.openstack4j.model.storage.object.options.ObjectLocation;
 import org.openstack4j.model.storage.object.options.ObjectPutOptions;
 import org.openstack4j.openstack.OSFactory;
 
@@ -31,7 +36,6 @@ public class JmonitorCore {
 	}
 	
 	public void storeInSwift (){
-		
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 		JmonitorMessage msg = null;
 
@@ -51,7 +55,6 @@ public class JmonitorCore {
 				ObjectPutOptions.create()
 				 .path("/" + plgname)
 				);
-		
 		
 		//close InputStream of the message took from BlockingQueue
 		try {
@@ -91,5 +94,20 @@ public class JmonitorCore {
 	    str = now + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
 		return is;
+	}
+	
+	private File storeInLocalLog (JmonitorMessage msg) { //add to UML
+		String plgName = msg.getPlg().getName();
+		//create a the file and directory path if not exits
+		File f = new File ("plgName" + File.separator + plgName + ".txt");
+		if (!f.exists())
+		
+		try (OutputStream p = new FileOutputStream (plgName)){
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
