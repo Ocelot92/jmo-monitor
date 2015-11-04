@@ -102,7 +102,7 @@ public class JmonitorCore {
 	/*Creates the log file locally, creates a new file if the current is bigger than SIZE_LIMIT
 	 *  and return the File reference of the file created so that it can be stored in Swift.
 	 */
-	private File storeInLocal (JmonitorMessage msg) { //add to UML
+	private File storeInLocal (JmonitorMessage msg) {
 		String plgName = msg.getPlg().getName();
 		int counter = msg.getPlg().getFileCounter();
 		File f = new File (plgName + File.separator + plgName + String.valueOf(counter) +".txt");
