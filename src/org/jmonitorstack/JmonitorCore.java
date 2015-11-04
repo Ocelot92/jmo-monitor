@@ -118,13 +118,15 @@ public class JmonitorCore {
 		}
 		
 		//Opens the file in append mode
-		try (OutputStream os = new FileOutputStream (plgName,true)){
-			BufferedReader bf = new 
-			os.write(msg.getPayload().);
+		try (OutputStream outstrm = new FileOutputStream (f,true)){
+			byte [] b = new byte [msg.getPayload().available()];
+			outstrm.write(b);
+			//os.write(msg.getPayload().);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return f;
 	}
 }
