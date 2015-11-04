@@ -17,7 +17,7 @@ public class JmonitorCore {
 	private PluginsManager pm;
 	private Date now;
 	
-	public JmonitorCore (String endpoint, String container, String user, String passwd, String tenant, String dirplg) {
+	public JmonitorCore (String endpoint, String container, String user, String passwd, String tenant, File dirplg) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
 		now = new Date ();

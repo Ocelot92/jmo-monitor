@@ -9,14 +9,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class PluginsManager {
-	private String directory;
+	private File directory;
 	private List <IfcPlugin> plugins;
 	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorMessage> resultsQueue; 
 	private final int QUEUE_CAPACITY = 10;
 	private Timer tmr;
 	  
-	public PluginsManager (String dir){
+	public PluginsManager (File dir){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
 		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
