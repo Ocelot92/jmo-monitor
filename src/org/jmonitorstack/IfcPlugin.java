@@ -4,9 +4,10 @@ import java.util.concurrent.BlockingQueue;
 abstract public class IfcPlugin {
 	protected String name;
 	protected long rate;
-	// this is the reference to the BlockingQueue where all the plugins puts the output of their monitor activity
+	// this is the reference to the BlockingQueue where all the plugins puts the output of their monitor activity.
 	protected BlockingQueue<JmonitorMessage> monitorQueue;
-	//fileCounter keeps track of the # of files wrote. It's used for naming a new file after the SIZE_LIMIT is reached 
+	/* fileCounter keeps track of the # of files wrote. It's used for naming a new file after the SIZE_LIMIT is reached.
+	Starts from 0. */
 	private int fileCounter;
 	
 	public IfcPlugin (BlockingQueue<JmonitorMessage> q) {

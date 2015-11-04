@@ -1,4 +1,5 @@
 package org.jmonitorstack;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,10 +22,12 @@ public class JmonitorCore {
 	private OSClient os;
 	private PluginsManager pm;
 	private Date now;
+	private long SIZE_LIMIT;
 	
 	public JmonitorCore (String endpoint, String container, String user, String passwd, String tenant, String dirplg) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
+		SIZE_LIMIT = 500000;// 500kB
 		now = new Date ();
 		pm = new PluginsManager (dirplg);
 		
@@ -35,7 +38,7 @@ public class JmonitorCore {
 				.authenticate();
 	}
 	
-	public void storeInSwift (){
+	private void storeInSwift (){
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 		JmonitorMessage msg = null;
 
@@ -96,14 +99,28 @@ public class JmonitorCore {
 		return is;
 	}
 	
-	private File storeInLocalLog (JmonitorMessage msg) { //add to UML
+	/*Creates the log file locally, creates a new file if the current is bigger than SIZE_LIMIT
+	 *  and return the File reference of the file created so that it can be stored in Swift.
+	 */
+	private File storeInLocal (JmonitorMessage msg) { //add to UML
 		String plgName = msg.getPlg().getName();
-		//create a the file and directory path if not exits
-		File f = new File ("plgName" + File.separator + plgName + ".txt");
-		if (!f.exists())
+		int counter = msg.getPlg().getFileCounter();
+		File f = new File (plgName + File.separator + plgName + String.valueOf(counter) +".txt");
 		
-		try (OutputStream p = new FileOutputStream (plgName)){
-			
+		//Creates and Checks if file is bigger than SIZE_LIMIT
+		try {
+			if(!f.createNewFile() && f.length() > SIZE_LIMIT){
+				msg.getPlg().incFileCounter();
+				f = new File(plgName + File.separator + plgName + String.valueOf(counter) +".txt");
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		//Opens the file in append mode
+		try (OutputStream os = new FileOutputStream (plgName,true)){
+			BufferedReader bf = new 
+			os.write(msg.getPayload().);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
