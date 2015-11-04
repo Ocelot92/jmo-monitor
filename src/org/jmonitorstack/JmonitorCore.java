@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.common.Payloads;
 import org.openstack4j.model.storage.block.options.DownloadOptions;
@@ -50,7 +52,6 @@ public class JmonitorCore {
 		
 		String plgname = msg.getPlg().getName();
 		InputStream payload = msg.getPayload();
-		
 		payload = formatResult(payload);
 		
 		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,
@@ -70,12 +71,17 @@ public class JmonitorCore {
 	public void startMonitoring (){
 		pm.loadPlugins();
 		pm.runPlugins();
-		
+		BlockingQueue<JmonitorMessage> queue = pm.getResultsQueue();
 		
 		System.out.println("Monitoring session started.\n"
 				+ "Type q to finish.");
-		//while (true)
-			storeInSwift();
+		while (true){
+			try {
+				storeInLocal(queue.take());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		
 	}
 
@@ -102,26 +108,30 @@ public class JmonitorCore {
 	/*Creates the log file locally, creates a new file if the current is bigger than SIZE_LIMIT
 	 *  and return the File reference of the file created so that it can be stored in Swift.
 	 */
-	private File storeInLocal (JmonitorMessage msg) {
+	private File storeInLocal (JmonitorMessage msg) {//fix "local"
 		String plgName = msg.getPlg().getName();
 		int counter = msg.getPlg().getFileCounter();
-		File f = new File (plgName + File.separator + plgName + String.valueOf(counter) +".txt");
+		File f = new File ("local" + File.separator + plgName + File.separator + plgName + String.valueOf(counter) +".txt");
+		InputStream is = null;
 		
-		//Creates and Checks if file is bigger than SIZE_LIMIT
-		try {
-			if(!f.createNewFile() && f.length() > SIZE_LIMIT){
+		if(!f.exists()){
+			f.getParentFile().mkdirs();
+			
+			}else{
+				if(f.length() > SIZE_LIMIT){
 				msg.getPlg().incFileCounter();
-				f = new File(plgName + File.separator + plgName + String.valueOf(counter) +".txt");
+				f = new File("local" + plgName + File.separator + plgName + String.valueOf(counter) +".txt");
 			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		}
 		
 		//Opens the file in append mode
-		try (OutputStream outstrm = new FileOutputStream (f,true)){
-			byte [] b = new byte [msg.getPayload().available()];
+		try (FileOutputStream outstrm = new FileOutputStream (f,true)){
+			is = msg.getPayload();
+			is = formatResult(is);
+			byte [] b = new byte [is.available()];
+			is.read(b);
 			outstrm.write(b);
-			//os.write(msg.getPayload().);
+		
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
