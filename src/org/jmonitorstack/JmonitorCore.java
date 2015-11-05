@@ -29,8 +29,9 @@ public class JmonitorCore {
 	private Date now;
 	private long SIZE_LIMIT;
 	private final String LOCAL_DIR;
+	private final long readiness;
 	
-	public JmonitorCore (String endpoint, String container, String user, String passwd, String tenant, String dirplg) {
+	public JmonitorCore (String endpoint, String container, String user, String passwd, String tenant, String dirplg, long rdness) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
 		SIZE_LIMIT = 500000;// 500kB
@@ -43,6 +44,7 @@ public class JmonitorCore {
 				.tenantName(tenant)
 				.authenticate();
 		LOCAL_DIR = "local";
+		readiness = rdness;
 	}
 	
 	//Store in Swift the given File

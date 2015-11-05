@@ -10,7 +10,7 @@ public class Main {
 		String tenant = "facebook961203343944138";
 		String dirplg = "plugins";
 		
-		JmonitorCore monitor = new JmonitorCore(endpoint, container, user, passwd, tenant, dirplg);
+		JmonitorCore monitor = new JmonitorCore(endpoint, container, user, passwd, tenant, dirplg, 0);
 		monitor.startMonitoring();
 		
 	}
