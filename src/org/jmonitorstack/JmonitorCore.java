@@ -42,7 +42,7 @@ public class JmonitorCore {
 		LOCAL_DIR = "local";
 	}
 	
-	private void storeInSwift (){
+	private void storeInSwift (File f){
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 		JmonitorMessage msg = null;
 
@@ -57,7 +57,7 @@ public class JmonitorCore {
 		payload = formatResult(payload);
 		
 		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,
-				Payloads.create(payload), 
+				Payloads.create(f), 
 				ObjectPutOptions.create()
 				 .path("/" + plgname)
 				);
