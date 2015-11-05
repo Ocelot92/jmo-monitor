@@ -14,8 +14,12 @@ public class PluginsManager {
 	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorMessage> resultsQueue; 
 	private final int QUEUE_CAPACITY = 10;
+	
+	/* java.util.Timer is a facility for threads, it's used for scheduling timer tasks (each IfcPlugin.monitor() corresponds
+	 * to a timer task). Thus, the timer tasks must be completed quickly otherwise they may delay the execution of the 
+	 * successive one. */
 	private Timer tmr;
-	  
+	
 	public PluginsManager (File dir){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
