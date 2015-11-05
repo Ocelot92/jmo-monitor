@@ -64,14 +64,13 @@ public class JmonitorCore {
 		BlockingQueue<JmonitorMessage> queue = pm.getResultsQueue();
 
 		System.out.println("Monitoring session started.\n"
-				+ "Type q to finish.");
+				+ "Enter q to finish.");
 
 
 		try(Reader isr = new InputStreamReader (System.in)){
 			do{
 				storeInLocal(queue.take());
-				if (isr.ready() && isr.read() == 'q') break;
-			}while (true);
+			}while (!isr.ready() || (isr.ready() && isr.read() != 'q'));
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
