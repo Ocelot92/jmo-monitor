@@ -25,6 +25,7 @@ public class JmonitorCore {
 	private PluginsManager pm;
 	private Date now;
 	private long SIZE_LIMIT;
+	private final String LOCAL_DIR;
 	
 	public JmonitorCore (String endpoint, String container, String user, String passwd, String tenant, String dirplg) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
@@ -38,6 +39,7 @@ public class JmonitorCore {
 				.credentials(user,passwd)
 				.tenantName(tenant)
 				.authenticate();
+		LOCAL_DIR = "local";
 	}
 	
 	private void storeInSwift (){
@@ -111,27 +113,28 @@ public class JmonitorCore {
 	private File storeInLocal (JmonitorMessage msg) {//fix "local"
 		String plgName = msg.getPlg().getName();
 		int counter = msg.getPlg().getFileCounter();
-		File f = new File ("local" + File.separator + plgName + File.separator + plgName + String.valueOf(counter) +".txt");
-		InputStream is = null;
+		File f = new File (LOCAL_DIR + File.separator + plgName + File.separator + plgName + String.valueOf(counter) +".txt");
 		
+		//if file doesn't exists, create it. If exists check its size
 		if(!f.exists()){
 			f.getParentFile().mkdirs();
 			
 			}else{
 				if(f.length() > SIZE_LIMIT){
 				msg.getPlg().incFileCounter();
-				f = new File("local" + plgName + File.separator + plgName + String.valueOf(counter) +".txt");
+				f = new File(LOCAL_DIR + plgName + File.separator + plgName + String.valueOf(counter) +".txt");
 			}
 		}
 		
-		//Opens the file in append mode
+		//Opens the file in append mode and writes the msg's payload
 		try (FileOutputStream outstrm = new FileOutputStream (f,true)){
-			is = msg.getPayload();
+			InputStream is = msg.getPayload();
 			is = formatResult(is);
 			byte [] b = new byte [is.available()];
 			is.read(b);
 			outstrm.write(b);
-		
+			
+			is.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
