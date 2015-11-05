@@ -70,6 +70,7 @@ public class JmonitorCore {
 		}
 	}
 	
+	//Start monitoring session
 	public void startMonitoring (){
 		pm.loadPlugins();
 		pm.runPlugins();
@@ -101,7 +102,8 @@ public class JmonitorCore {
 		Scanner scan = new Scanner(is);
 		scan.useDelimiter("\\A");
 	    String str =  scan.hasNext() ? scan.next() : "";
-	   
+	    
+	    now.setTime(System.currentTimeMillis());
 	    str = now + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
 		return is;
@@ -118,7 +120,6 @@ public class JmonitorCore {
 		//if file doesn't exists, create it. If exists check its size
 		if(!f.exists()){
 			f.getParentFile().mkdirs();
-			
 			}else{
 				if(f.length() > SIZE_LIMIT){
 				msg.getPlg().incFileCounter();
