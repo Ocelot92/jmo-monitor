@@ -42,32 +42,18 @@ public class JmonitorCore {
 		LOCAL_DIR = "local";
 	}
 	
+	//Store in Swift the given File
 	private void storeInSwift (File f){
 		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
-		JmonitorMessage msg = null;
-
-		try {
-			msg = pm.getResultsQueue().take();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		String plgname = f.getName();
 		
-		String plgname = msg.getPlg().getName();
-		InputStream payload = msg.getPayload();
-		payload = formatResult(payload);
-		
-		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname +".txt" ,
+		os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname,
 				Payloads.create(f), 
 				ObjectPutOptions.create()
 				 .path("/" + plgname)
 				);
 		
-		//close InputStream of the message took from BlockingQueue
-		try {
-			payload.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 	
 	//Start monitoring session
@@ -75,9 +61,10 @@ public class JmonitorCore {
 		pm.loadPlugins();
 		pm.runPlugins();
 		BlockingQueue<JmonitorMessage> queue = pm.getResultsQueue();
-		
 		System.out.println("Monitoring session started.\n"
 				+ "Type q to finish.");
+		
+		
 		while (true){
 			try {
 				storeInLocal(queue.take());
