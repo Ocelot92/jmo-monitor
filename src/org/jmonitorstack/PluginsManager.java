@@ -20,14 +20,14 @@ public class PluginsManager {
 	 * successive one. */
 	private Timer tmr;
 	
-	public PluginsManager (File dir){
+	public PluginsManager (File dir, Timer t){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
 		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+		tmr = t;
 	}
 	
 	public void runPlugins () {
-		tmr = new Timer();
 		//creates a task for each plugin and launches it
 		for (int i = 0; i < plugins.size(); i++) {
 			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
@@ -76,8 +76,7 @@ public class PluginsManager {
 		return resultsQueue;
 	}
 	
-	public Timer getTmr() {
-		return tmr;
+	public List<IfcPlugin> getPlugins(){
+		return plugins;
 	}
-	
 }
