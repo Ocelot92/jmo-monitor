@@ -7,20 +7,23 @@ import java.io.IOException;
 
 public class PluginClassLoader extends ClassLoader {
 	File directory;
-	
+	//**************************Constructors*********************************************
 	public PluginClassLoader (File dir){
 		directory = dir;
 	}
-	
-/*Just a convenient call to the 2-args loadClass
- * (non-Javadoc)
- * @see java.lang.ClassLoader#loadClass(java.lang.String)
- */
+	/********************************************************************************************
+	 * Just a convenient call to the 2-args loadClass(String, boolean)
+	 */
 	@Override
 	public Class<?> loadClass (String name) throws ClassNotFoundException { 
 	      return loadClass(name, true); 
 	}
-	
+	/********************************************************************************************
+	 * Loads the class given in the classname string. First it do some checks:
+	 * 1- class already loaded
+	 * 2- classname is a system class
+	 * 3- load classname from the directory (this.directory)
+	 */
 	@Override
 	public Class<?> loadClass (String classname, boolean resolve){
 		Class<?> c = null;

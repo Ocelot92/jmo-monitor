@@ -14,19 +14,21 @@ public class PluginsManager {
 	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
 	private BlockingQueue <JmonitorMessage> resultsQueue; 
 	private final int QUEUE_CAPACITY = 10;
-	
+
 	/* java.util.Timer is a facility for threads, it's used for scheduling timer tasks (each IfcPlugin.monitor() corresponds
 	 * to a timer task). Thus, the timer tasks must be completed quickly otherwise they may delay the execution of the 
 	 * successive one. */
 	private Timer tmr;
-	
+	//****************************Constructors****************************************************
 	public PluginsManager (File dir, Timer t){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
 		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
 		tmr = t;
 	}
-	
+	/********************************************************************************************
+	 *Runs the plugins in the plugins List by scheduling them at their specific rates.
+	 */
 	public void runPlugins () {
 		//creates a task for each plugin and launches it
 		for (int i = 0; i < plugins.size(); i++) {
@@ -34,15 +36,15 @@ public class PluginsManager {
 			tmr.scheduleAtFixedRate(task, 1000, plugins.get(i).getRate() );
 		}
 	}
-	
-	
-	/*This method uses the PluginClassLoader to load all the classes in the directory field which extends 
-	 * the IfcPlugin abstract class. Once loaded the plugins are added in the plugins List.
+
+	/********************************************************************************************
+	 *This method uses the PluginClassLoader to load all the class files -specified in the directory
+	 * field - which extends the IfcPlugin abstract class. Once loaded the plugins are added in the plugins List.
 	 */
 	public void loadPlugins (){
 		File dir = new File (System.getProperty("user.dir") + File.separator + directory);
 		ClassLoader cl = new PluginClassLoader(dir);
-		
+
 		//listing all dir's files
 		if (dir.exists() && dir.isDirectory()) {
 			String files []= dir.list();
@@ -71,11 +73,10 @@ public class PluginsManager {
 			System.out.println("Wrong plugins path!");
 		}
 	}
-	
+	//********************Accessor Methods********************************************************
 	public BlockingQueue<JmonitorMessage> getResultsQueue () {
 		return resultsQueue;
 	}
-	
 	public List<IfcPlugin> getPlugins(){
 		return plugins;
 	}
