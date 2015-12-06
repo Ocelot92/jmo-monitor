@@ -7,24 +7,22 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class PluginsManager {
 	private File directory;
 	private List <IfcPlugin> plugins;
 	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
-	private BlockingQueue <JmonitorMessage> resultsQueue; 
+	private BlockingQueue <JMOMessage> resultsQueue; 
 	private final int QUEUE_CAPACITY = 10;
-
-	/* java.util.Timer is a facility for threads, it's used for scheduling timer tasks (each IfcPlugin.monitor() corresponds
-	 * to a timer task). Thus, the timer tasks must be completed quickly otherwise they may delay the execution of the 
-	 * successive one. */
-	private Timer tmr;
+	private ScheduledExecutorService schedThreadPool;
 	//****************************Constructors****************************************************
-	public PluginsManager (File dir, Timer t){
+	public PluginsManager (File dir, ScheduledExecutorService ses){
 		directory = dir;
 		plugins = new LinkedList<IfcPlugin> ();
 		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-		tmr = t;
+		schedThreadPool=ses;
 	}
 	/********************************************************************************************
 	 *Runs the plugins in the plugins List by scheduling them at their specific rates.
@@ -32,13 +30,12 @@ public class PluginsManager {
 	public void runPlugins () {
 		//creates a task for each plugin and launches it
 		for (int i = 0; i < plugins.size(); i++) {
-			TimerTask task = new PluginScheduler( (IfcPlugin) plugins.get(i) );
-			tmr.scheduleAtFixedRate(task, 1000, plugins.get(i).getRate() );
+			schedThreadPool.scheduleAtFixedRate(plugins.get(i), 0, plugins.get(i).getRate(), TimeUnit.SECONDS);
 		}
 	}
 
 	/********************************************************************************************
-	 *This method uses the PluginClassLoader to load all the class files -specified in the directory
+	 *This method uses the PluginClassLoader to load all the class files - specified in the directory
 	 * field - which extends the IfcPlugin abstract class. Once loaded the plugins are added in the plugins List.
 	 */
 	public void loadPlugins (){
@@ -74,7 +71,7 @@ public class PluginsManager {
 		}
 	}
 	//********************Accessor Methods********************************************************
-	public BlockingQueue<JmonitorMessage> getResultsQueue () {
+	public BlockingQueue<JMOMessage> getResultsQueue () {
 		return resultsQueue;
 	}
 	public List<IfcPlugin> getPlugins(){
