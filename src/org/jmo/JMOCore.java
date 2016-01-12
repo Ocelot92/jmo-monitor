@@ -32,7 +32,6 @@ public class JMOCore {
 	private final String LOCAL_DIR;
 	private final long readiness; //rate (in milliseconds) at which update logs on Swift: 0 default - immediately
 	private final ScheduledExecutorService schedThreadPool;
-	private int filesUploaded []; //number of files uploaded per plugin
 	//******************************Constructors*********************************************
 	public JMOCore (String endpoint, String container, String user, String passwd, String tenant, File dirplg, long rdness) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
@@ -75,8 +74,6 @@ public class JMOCore {
 	 */
 	public void startMonitoring (){
 		pm.loadPlugins();
-		filesUploaded = new int [pm.getPlugins().size()];
-		initializeFilesUploaded();
 		pm.runPlugins();
 		BlockingQueue<JMOMessage> queue = pm.getResultsQueue();
 		File f = null;
@@ -147,12 +144,5 @@ public class JMOCore {
 			e.printStackTrace();
 		}
 		return f;
-	}
-	/*********************************************************************************************	
-	 * Initializes filesuploaded to -1.
-	 */
-	private void initializeFilesUploaded (){
-		for (int i = 0; i < filesUploaded.length; i++)
-			filesUploaded[i] = -1;
 	}
 }
