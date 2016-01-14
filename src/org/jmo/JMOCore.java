@@ -12,7 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.Timer;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,6 +32,7 @@ public class JMOCore {
 	private final String LOCAL_DIR;
 	private final long readiness; //rate (in milliseconds) at which update logs on Swift: 0 default - immediately
 	private final ScheduledExecutorService schedThreadPool;
+	private final Set<File> pendingLogs;
 	//******************************Constructors*********************************************
 	public JMOCore (String endpoint, String container, String user, String passwd, String tenant, File dirplg, long rdness) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
@@ -49,34 +50,17 @@ public class JMOCore {
 		LOCAL_DIR = "local";
 		readiness = rdness;
 	}
-	/*********************************************************************************************
-	 *Stores in Swift a given file. The path follows this pattern:
-	 *'/HostName/PluginName/PluginName#.txt' #: from 0 onwards
-	 */
-	private void storeInSwift (File f){
-		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
-		String plgname = f.getName();
-
-		try {
-			os.objectStorage().objects().put(SWIFT_CONTAINER_NAME,plgname,
-					Payloads.create(f), 
-					ObjectPutOptions.create()
-					.path("/" + InetAddress.getLocalHost().getHostName() + "/" +plgname)
-					);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-	}
 	/*********************************************************************************************		
-	 *Starts monitoring session by loading the plugins and running them. Then it keeps taking from
-	 *the BlockingQueue the outputs of the plugins and writes the logs using storeInLocal(). Then 
-	 *it uploads the files according to the readiness field.
+	 *Starts monitoring session by loading the plugins and running them. It keeps "taking" from
+	 *the BlockingQueue the outputs of the plugins and writes the logs using storeInLocal(). It also
+	 *schedules a task which uploads the last logs modified to Swift.
 	 */
 	public void startMonitoring (){
 		pm.loadPlugins();
 		pm.runPlugins();
 		BlockingQueue<JMOMessage> queue = pm.getResultsQueue();
 		File f = null;
+		
 
 		System.out.println("Monitoring session started.\n"
 				+ "Enter q to finish.");
@@ -84,9 +68,6 @@ public class JMOCore {
 		try(Reader isr = new InputStreamReader (System.in)){
 			do{
 				f = storeInLocal(queue.take());
-				//if readiness is set to 0, upload the file to Swift immediately
-				if (readiness == 0)
-					storeInSwift(f);
 			}while (!isr.ready() || (isr.ready() && isr.read() != 'q'));
 
 		} catch (InterruptedException e) {
