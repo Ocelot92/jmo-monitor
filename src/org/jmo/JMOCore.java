@@ -30,7 +30,7 @@ public class JMOCore {
 	private Date now;
 	private long SIZE_LIMIT; //max size of the log in bytes
 	private final String LOCAL_DIR;
-	private final long READINESS; //rate (in milliseconds) at which update logs on Swift: 0 default - immediately
+	private final int READINESS; //rate (in seconds) at which update logs on Swift
 	private final ScheduledExecutorService SCHED_EXEC_SERV;
 	private final Set<File> PENDING_LOGS;
 	//******************************Constructors*********************************************

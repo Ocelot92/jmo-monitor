@@ -3,7 +3,7 @@ import java.util.concurrent.BlockingQueue;
 
 abstract public class IfcPlugin implements Runnable{
 	protected String name;
-	protected long rate;
+	protected int rate;
 	// this is the reference to the BlockingQueue where all the plugins puts the output of their monitor activity.
 	protected BlockingQueue<JMOMessage> monitorQueue;
 	// fileCounter keeps track of the # of files written. Starts from 0.
