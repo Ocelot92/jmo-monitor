@@ -10,25 +10,24 @@ import java.util.concurrent.TimeUnit;
 
 public class PluginsManager {
 	private File directory;
-	private List <IfcPlugin> plugins;
+	private List <IfcPlugin> PLUGINS;
 	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
-	private BlockingQueue <JMOMessage> resultsQueue; 
-	private final int QUEUE_CAPACITY = 10;
-	private ScheduledExecutorService schedThreadPool;
+	private final BlockingQueue <JMOMessage> RESULTS_QUEUE; 
+	private final int QUEUE_CAPACITY;
 	//****************************Constructors****************************************************
-	public PluginsManager (File dir, ScheduledExecutorService ses){
+	public PluginsManager (File dir){
 		directory = dir;
-		plugins = new LinkedList<IfcPlugin> ();
-		resultsQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
-		schedThreadPool=ses;
+		PLUGINS = new LinkedList<IfcPlugin> ();
+		QUEUE_CAPACITY = 10;
+		RESULTS_QUEUE = new ArrayBlockingQueue<JMOMessage>(QUEUE_CAPACITY);
 	}
 	/********************************************************************************************
 	 *Runs the plugins in the plugins List by scheduling them at their specific rates.
 	 */
-	public void runPlugins () {
+	public void runPlugins (ScheduledExecutorService schdExecServ) {
 		//creates a task for each plugin and launches it
-		for (int i = 0; i < plugins.size(); i++) {
-			schedThreadPool.scheduleAtFixedRate(plugins.get(i), 0, plugins.get(i).getRate(), TimeUnit.SECONDS);
+		for (int i = 0; i < PLUGINS.size(); i++) {
+			schdExecServ.scheduleAtFixedRate(PLUGINS.get(i), 0, PLUGINS.get(i).getRate(), TimeUnit.SECONDS);
 		}
 	}
 
@@ -55,9 +54,9 @@ public class PluginsManager {
 					//check if the class implements IfcPlugin
 					if (clsLoaded != null && IfcPlugin.class.isAssignableFrom(clsLoaded) ){
 						try {
-							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(BlockingQueue.class).newInstance(resultsQueue);
+							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(BlockingQueue.class).newInstance(RESULTS_QUEUE);
 							plg.initPlugin();
-							plugins.add(plg);
+							PLUGINS.add(plg);
 						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 							e.printStackTrace();
 						}
@@ -70,9 +69,9 @@ public class PluginsManager {
 	}
 	//********************Accessor Methods********************************************************
 	public BlockingQueue<JMOMessage> getResultsQueue () {
-		return resultsQueue;
+		return RESULTS_QUEUE;
 	}
 	public List<IfcPlugin> getPlugins(){
-		return plugins;
+		return PLUGINS;
 	}
 }

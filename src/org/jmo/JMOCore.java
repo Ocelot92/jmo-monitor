@@ -25,30 +25,30 @@ import org.openstack4j.openstack.OSFactory;
 public class JMOCore {
 	private final String OS_AUTH_ENDPOINT_URL;
 	private final String SWIFT_CONTAINER_NAME;
-	private OSClient os;
+	private final OSClient OS;
 	private PluginsManager pm;
 	private Date now;
 	private long SIZE_LIMIT; //max size of the log in bytes
 	private final String LOCAL_DIR;
-	private final long readiness; //rate (in milliseconds) at which update logs on Swift: 0 default - immediately
-	private final ScheduledExecutorService schedThreadPool;
-	private final Set<File> pendingLogs;
+	private final long READINESS; //rate (in milliseconds) at which update logs on Swift: 0 default - immediately
+	private final ScheduledExecutorService SCHED_EXEC_SERV;
+	private final Set<File> PENDING_LOGS;
 	//******************************Constructors*********************************************
 	public JMOCore (String endpoint, String container, String user, String passwd, String tenant, File dirplg, long rdness) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
 		SIZE_LIMIT = 500000;// 500kB
 		now = new Date ();
-		schedThreadPool = Executors.newScheduledThreadPool(3);//pool initializated with 3 threads
-		pm = new PluginsManager (dirplg, schedThreadPool);
+		SCHED_EXEC_SERV = Executors.newScheduledThreadPool(3);//pool initializated with 3 threads
+		pm = new PluginsManager (dirplg);
 
-		os = OSFactory.builder()
+		OS = OSFactory.builder()
 				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
 				.tenantName(tenant)
 				.authenticate();
 		LOCAL_DIR = "local";
-		readiness = rdness;
+		READINESS = rdness;
 	}
 	/*********************************************************************************************		
 	 *Starts monitoring session by loading the plugins and running them. It keeps "taking" from
@@ -57,7 +57,7 @@ public class JMOCore {
 	 */
 	public void startMonitoring (){
 		pm.loadPlugins();
-		pm.runPlugins();
+		pm.runPlugins(SCHED_EXEC_SERV);
 		BlockingQueue<JMOMessage> queue = pm.getResultsQueue();
 		File f = null;
 		
