@@ -46,7 +46,7 @@ public class LogsUploader implements Runnable{
 	}
 	@Override
 	public void run() {
-		
+		uploadLogs();
 		
 	}
 

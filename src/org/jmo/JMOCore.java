@@ -8,18 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.openstack4j.api.OSClient;
-import org.openstack4j.model.common.Payloads;
-import org.openstack4j.model.storage.object.options.ObjectPutOptions;
 import org.openstack4j.openstack.OSFactory;
 
 public class JMOCore {
@@ -32,16 +31,15 @@ public class JMOCore {
 	private final String LOCAL_DIR;
 	private final int READINESS; //rate (in seconds) at which update logs on Swift
 	private final ScheduledExecutorService SCHED_EXEC_SERV;
-	private final Set<File> PENDING_LOGS;
+	private final Set<File> PENDING_LOGS; //Logs that haven't been synch to Swift yet
 	//******************************Constructors*********************************************
-	public JMOCore (String endpoint, String container, String user, String passwd, String tenant, File dirplg, long rdness) {
+	public JMOCore (String endpoint, String container, String user, String passwd, String tenant, File dirplg, int rdness) {
 		OS_AUTH_ENDPOINT_URL = endpoint;
 		SWIFT_CONTAINER_NAME = container;
 		SIZE_LIMIT = 500000;// 500kB
 		now = new Date ();
-		SCHED_EXEC_SERV = Executors.newScheduledThreadPool(3);//pool initializated with 3 threads
+		SCHED_EXEC_SERV = Executors.newScheduledThreadPool(3);//pool initialized with 3 threads
 		pm = new PluginsManager (dirplg);
-
 		OS = OSFactory.builder()
 				.endpoint(OS_AUTH_ENDPOINT_URL)
 				.credentials(user,passwd)
@@ -49,6 +47,7 @@ public class JMOCore {
 				.authenticate();
 		LOCAL_DIR = "local";
 		READINESS = rdness;
+		PENDING_LOGS = (Set<File>) Collections.synchronizedSet(new HashSet<File> ());
 	}
 	/*********************************************************************************************		
 	 *Starts monitoring session by loading the plugins and running them. It keeps "taking" from
@@ -59,15 +58,18 @@ public class JMOCore {
 		pm.loadPlugins();
 		pm.runPlugins(SCHED_EXEC_SERV);
 		BlockingQueue<JMOMessage> queue = pm.getResultsQueue();
-		File f = null;
 		
+		SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS, SWIFT_CONTAINER_NAME), 0, READINESS, TimeUnit.SECONDS);
+		
+		File f = null;
 
 		System.out.println("Monitoring session started.\n"
 				+ "Enter q to finish.");
 
 		try(Reader isr = new InputStreamReader (System.in)){
 			do{
-				f = storeInLocal(queue.take());
+				f = storeInLocal(queue.take()); //updates/creates the the log and returns the File
+				PENDING_LOGS.add(f); //add the newly created/updated log to the pending logs
 			}while (!isr.ready() || (isr.ready() && isr.read() != 'q'));
 
 		} catch (InterruptedException e) {
@@ -75,6 +77,7 @@ public class JMOCore {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		SCHED_EXEC_SERV.shutdown();
 	}
 	/********************************************************************************************
 	 * Formats a given InputStream by adding the date.
@@ -100,7 +103,7 @@ public class JMOCore {
 		String path = LOCAL_DIR + File.separator + plgName + File.separator + plgName + String.valueOf(msg.getPlg().getFileCounter()) +".txt";
 		File f = new File (path);
 
-		//if file doesn't exists, create it. If exists check its size
+		//if file doesn't exist, create it. If it exists check its size
 		if(!f.exists()){
 			f.getParentFile().mkdirs();
 		}else{
@@ -124,6 +127,7 @@ public class JMOCore {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		return f;
 	}
 }
