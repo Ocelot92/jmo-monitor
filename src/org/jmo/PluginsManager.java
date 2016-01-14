@@ -1,7 +1,8 @@
 package org.jmo;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -17,7 +18,7 @@ public class PluginsManager {
 	//****************************Constructors****************************************************
 	public PluginsManager (File dir){
 		directory = dir;
-		PLUGINS = new LinkedList<IfcPlugin> ();
+		PLUGINS = new ArrayList<IfcPlugin> (); //default size: 10
 		QUEUE_CAPACITY = 10;
 		RESULTS_QUEUE = new ArrayBlockingQueue<JMOMessage>(QUEUE_CAPACITY);
 	}
@@ -25,9 +26,12 @@ public class PluginsManager {
 	 *Runs the plugins in the plugins List by scheduling them at their specific rates.
 	 */
 	public void runPlugins (ScheduledExecutorService schdExecServ) {
-		//creates a task for each plugin and launches it
-		for (int i = 0; i < PLUGINS.size(); i++) {
-			schdExecServ.scheduleAtFixedRate(PLUGINS.get(i), 0, PLUGINS.get(i).getRate(), TimeUnit.SECONDS);
+		//creates a task for each plugin and schedules it
+		Iterator <IfcPlugin> i = PLUGINS.iterator();
+		IfcPlugin aux = null;
+		while (i.hasNext()){
+			aux=i.next();
+			schdExecServ.scheduleAtFixedRate(aux, 0, aux.getRate(), TimeUnit.SECONDS);
 		}
 	}
 
