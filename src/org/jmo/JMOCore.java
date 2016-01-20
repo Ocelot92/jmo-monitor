@@ -59,7 +59,7 @@ public class JMOCore {
 		pm.runPlugins(SCHED_EXEC_SERV);
 		BlockingQueue<JMOMessage> queue = pm.getResultsQueue();
 		
-		SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS, SWIFT_CONTAINER_NAME), 0, READINESS, TimeUnit.SECONDS);
+		SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS.getAccess(), SWIFT_CONTAINER_NAME), 0, READINESS, TimeUnit.SECONDS);
 		
 		File f = null;
 

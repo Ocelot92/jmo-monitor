@@ -8,18 +8,20 @@ import java.util.Set;
 
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.common.Payloads;
+import org.openstack4j.model.identity.Access;
 import org.openstack4j.model.storage.object.options.ObjectPutOptions;
+import org.openstack4j.openstack.OSFactory;
 
 public class LogsUploader implements Runnable{
 	private final Set <File> PENDING_LOGS;
-	private final OSClient OS;
+	private OSClient os;
 	private final String SWIFT_CONTAINER_NAME;
-	
+	private Access accessClnt;
 	//************************************Constructors********************************************
-	public LogsUploader(Set <File> logsSet, OSClient osc, String container) {
-		OS = osc;
+	public LogsUploader(Set <File> logsSet, Access acs, String container) {
 		PENDING_LOGS = logsSet;
 		SWIFT_CONTAINER_NAME = container;
+		accessClnt = acs;
 	}
 	/********************************************************************************************
 	 * Uploads all the logs in the pendingLogs set to Swift. 
@@ -32,10 +34,10 @@ public class LogsUploader implements Runnable{
 			 f = i.next();
 			 String plgname = f.getName().substring(0, f.getName().indexOf('.'));
 			 
-			 OS.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
+			 os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 			 
 			 try {
-				OS.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
+				os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
 						 Payloads.create(f),
 						 ObjectPutOptions.create()
 						 .path('/' + InetAddress.getLocalHost().getHostName() + '/' + plgname));
@@ -46,8 +48,8 @@ public class LogsUploader implements Runnable{
 	}
 	@Override
 	public void run() {
+		os = OSFactory.clientFromAccess(accessClnt);
 		uploadLogs();
-		
 	}
 
 }
