@@ -32,7 +32,7 @@ public class LogsUploader implements Runnable{
 		
 		while (i.hasNext()){
 			 f = i.next();
-			 String plgname = f.getName().substring(0, f.getName().indexOf('.'));
+			 String plgname = f.getName().substring(0, (f.getName().indexOf('.') -1 ));
 			 
 			 os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 			 
