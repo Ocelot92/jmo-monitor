@@ -2,7 +2,9 @@ package org.jmo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.Set;
 
 import org.openstack4j.api.OSClient;
@@ -22,7 +24,18 @@ public class LogsUploader implements Runnable{
 		PENDING_LOGS = logsSet;
 		SWIFT_CONTAINER_NAME = container;
 		accessClnt = acs;
-		HOSTNAME = Runtime.getRuntime().exec("hostname").toString();
+		InputStream is = Runtime.getRuntime().exec("/bin/hostname").getInputStream();
+		
+		try(Scanner scan = new java.util.Scanner(is)) {
+			scan.useDelimiter("\\A");
+			HOSTNAME = scan.hasNext() ? scan.next() : ""; 
+		}
+		
+		/*
+		scan.useDelimiter("\\A");
+		
+		HOSTNAME = scan.hasNext() ? scan.next() : "";
+		scan.close();*/
 	}
 	/********************************************************************************************
 	 * Uploads all the logs in the pendingLogs set to Swift. 
@@ -34,11 +47,6 @@ public class LogsUploader implements Runnable{
 		while (i.hasNext()){
 			 f = i.next();
 			 String plgname = f.getName().substring(0, (f.getName().indexOf('.') -1 ));
-			try {
-				HOSTNAME = Runtime.getRuntime().exec("HOSTNAME").toString();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 			 os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 			 
 			 os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),

@@ -85,14 +85,14 @@ public class JMOCore {
 	}
 	/********************************************************************************************
 	 * Formats a given InputStream by adding the date.
-	 * ATTENTION: if you close the scanner you'll close the stream too, failing the store operation.
 	 */
 	private InputStream formatResult (InputStream is) {
+		String str = null;
 		//Just a Scanner trick to convert InputStream to String
-		Scanner scan = new Scanner(is);
-		scan.useDelimiter("\\A");
-		String str =  scan.hasNext() ? scan.next() : "";
-
+		try(Scanner scan = new java.util.Scanner(is)) {
+			scan.useDelimiter("\\A");
+			str = scan.hasNext() ? scan.next() : ""; 
+		}
 		now.setTime(System.currentTimeMillis());
 		str = now + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
@@ -124,7 +124,6 @@ public class JMOCore {
 			byte [] b = new byte [is.available()];
 			is.read(b);
 			outstrm.write(b);
-
 			is.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
