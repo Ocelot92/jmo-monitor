@@ -1,8 +1,7 @@
 package org.jmo;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -17,11 +16,13 @@ public class LogsUploader implements Runnable{
 	private OSClient os;
 	private final String SWIFT_CONTAINER_NAME;
 	private Access accessClnt;
+	private String HOSTNAME;
 	//************************************Constructors********************************************
-	public LogsUploader(Set <File> logsSet, Access acs, String container) {
+	public LogsUploader(Set <File> logsSet, Access acs, String container) throws IOException {
 		PENDING_LOGS = logsSet;
 		SWIFT_CONTAINER_NAME = container;
 		accessClnt = acs;
+		HOSTNAME = Runtime.getRuntime().exec("hostname").toString();
 	}
 	/********************************************************************************************
 	 * Uploads all the logs in the pendingLogs set to Swift. 
@@ -33,17 +34,17 @@ public class LogsUploader implements Runnable{
 		while (i.hasNext()){
 			 f = i.next();
 			 String plgname = f.getName().substring(0, (f.getName().indexOf('.') -1 ));
-			 
-			 os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
-			 
-			 try {
-				os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
-						 Payloads.create(f),
-						 ObjectPutOptions.create()
-						 .path('/' + InetAddress.getLocalHost().getHostName() + '/' + plgname));
-			} catch (UnknownHostException e) {
+			try {
+				HOSTNAME = Runtime.getRuntime().exec("HOSTNAME").toString();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			 os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
+			 
+			 os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
+					 Payloads.create(f),
+					 ObjectPutOptions.create()
+					 .path('/' + HOSTNAME + '/' + plgname));
 		}
 	}
 	@Override
