@@ -18,7 +18,7 @@ public class LogsUploader implements Runnable{
 	private OSClient os;
 	private final String SWIFT_CONTAINER_NAME;
 	private Access accessClnt;
-	private String HOSTNAME;
+	private final String HOSTNAME;
 	//************************************Constructors********************************************
 	public LogsUploader(Set <File> logsSet, Access acs, String container) throws IOException {
 		PENDING_LOGS = logsSet;
