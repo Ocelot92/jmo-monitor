@@ -28,14 +28,8 @@ public class LogsUploader implements Runnable{
 		
 		try(Scanner scan = new java.util.Scanner(is)) {
 			scan.useDelimiter("\\A");
-			HOSTNAME = scan.hasNext() ? scan.next() : ""; 
+			HOSTNAME = scan.hasNext() ? scan.next().trim() : ""; 
 		}
-		
-		/*
-		scan.useDelimiter("\\A");
-		
-		HOSTNAME = scan.hasNext() ? scan.next() : "";
-		scan.close();*/
 	}
 	/********************************************************************************************
 	 * Uploads all the logs in the pendingLogs set to Swift. 
@@ -53,6 +47,7 @@ public class LogsUploader implements Runnable{
 					 Payloads.create(f),
 					 ObjectPutOptions.create()
 					 .path('/' + HOSTNAME + '/' + plgname));
+			 i.remove();
 		}
 	}
 	@Override
