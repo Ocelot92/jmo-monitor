@@ -2,6 +2,7 @@ package org.jmo;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -22,7 +24,6 @@ import org.openstack4j.api.OSClient;
 import org.openstack4j.openstack.OSFactory;
 
 public class JMOCore {
-	private final String OS_AUTH_ENDPOINT_URL;
 	private final String SWIFT_CONTAINER_NAME;
 	private final OSClient OS;
 	private PluginsManager pm;
@@ -32,22 +33,28 @@ public class JMOCore {
 	private final int READINESS; //rate (in seconds) at which update logs on Swift
 	private final ScheduledExecutorService SCHED_EXEC_SERV;
 	private final Set<File> PENDING_LOGS; //Logs that haven't been synch to Swift yet
-	//******************************Constructors*********************************************
-	public JMOCore (String endpoint, String container, String user, String passwd, String tenant, File dirplg, int rdness) {
-		OS_AUTH_ENDPOINT_URL = endpoint;
-		SWIFT_CONTAINER_NAME = container;
-		SIZE_LIMIT = 500000;// 500kB
-		now = new Date ();
-		SCHED_EXEC_SERV = Executors.newScheduledThreadPool(3);//pool initialized with 3 threads
-		pm = new PluginsManager (dirplg);
-		OS = OSFactory.builder()
-				.endpoint(OS_AUTH_ENDPOINT_URL)
-				.credentials(user,passwd)
-				.tenantName(tenant)
-				.authenticate();
-		LOCAL_DIR = "local";
-		READINESS = rdness;
+	//******************************Constructors*********************************************	
+	public JMOCore() throws FileNotFoundException, IOException{
+		LOCAL_DIR = "local-JMO";
+		now = new Date();
 		PENDING_LOGS = (Set<File>) Collections.synchronizedSet(new HashSet<File> ());
+		
+		Properties prop = new Properties();
+		//load parameters from config file
+		try(InputStream is = new FileInputStream ("JMO-config.properties") ){
+			prop.load(is);
+
+			OS = OSFactory.builder()
+					.endpoint(prop.getProperty("URLendpoint"))
+					.credentials(prop.getProperty("user"),prop.getProperty("password"))
+					.tenantName(prop.getProperty("tenant"))
+					.authenticate();
+			SWIFT_CONTAINER_NAME = prop.getProperty("containerName");
+			pm = new PluginsManager(new File(prop.getProperty("pluginsDir")));
+			READINESS = Integer.parseInt(prop.getProperty("readiness"));
+			SIZE_LIMIT = Integer.parseInt(prop.getProperty("logSize"));
+			SCHED_EXEC_SERV = Executors.newScheduledThreadPool(Integer.parseInt(prop.getProperty("poolSize")));
+		}
 	}
 	/*********************************************************************************************		
 	 *Starts monitoring session by loading the plugins and running them. It keeps "taking" from

@@ -11,7 +11,7 @@ abstract public class IfcPlugin implements Runnable{
 	//*******************************Constructors************************************************
 	public IfcPlugin (BlockingQueue<JMOMessage> q) {
 		monitorQueue = q;
-		fileCounter=0;
+		fileCounter = 1;
 	}
 	/********************************************************************************************
 	 * Use this method to set the plugin name and the rate at which call the monitoring() method.

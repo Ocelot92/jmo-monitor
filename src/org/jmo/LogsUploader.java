@@ -26,7 +26,7 @@ public class LogsUploader implements Runnable{
 		accessClnt = acs;
 		InputStream is = Runtime.getRuntime().exec("/bin/hostname").getInputStream();
 		
-		try(Scanner scan = new java.util.Scanner(is)) {
+		try(Scanner scan = new Scanner(is)) {
 			scan.useDelimiter("\\A");
 			HOSTNAME = scan.hasNext() ? scan.next().trim() : ""; 
 		}

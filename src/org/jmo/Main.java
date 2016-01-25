@@ -1,17 +1,16 @@
 package org.jmo;
-import java.io.File;
+import java.io.IOException;
+
 
 public class Main {
 	public static void main (String args []) {
-		String endpoint = "http://128.136.179.2:5000/v2.0";
-		String container =  "jmonitor-container";
-		String user = "facebook961203343944138";
-		String passwd = "FtVuoqcq5T2c9dV6";
-		String tenant = "facebook961203343944138";
-		File dirplg = new File ("plugins");
-		
-		JMOCore monitor = new JMOCore(endpoint, container, user, passwd, tenant, dirplg, 10);
-		monitor.startMonitoring();
+		JMOCore monitor;
+		try {
+			monitor = new JMOCore();
+			monitor.startMonitoring();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 }
