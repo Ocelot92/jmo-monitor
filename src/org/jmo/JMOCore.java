@@ -27,7 +27,7 @@ public class JMOCore {
 	private final OSClient OS;
 	private PluginsManager pm;
 	private Date now;
-	private long SIZE_LIMIT; //max size of the log in bytes
+	private int SIZE_LIMIT; //max size of the log in bytes
 	private final String LOCAL_DIR;
 	private final int READINESS; //rate (in seconds) at which update logs on Swift
 	private final ScheduledExecutorService SCHED_EXEC_SERV;
