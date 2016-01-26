@@ -24,6 +24,7 @@ import org.openstack4j.api.OSClient;
 import org.openstack4j.openstack.OSFactory;
 
 public class JMOCore {
+	private static JMOCore instance = null;
 	private final String SWIFT_CONTAINER_NAME;
 	private final OSClient OS;
 	private PluginsManager pm;
@@ -34,7 +35,7 @@ public class JMOCore {
 	private final ScheduledExecutorService SCHED_EXEC_SERV;
 	private final Set<File> PENDING_LOGS; //Logs that haven't been synch to Swift yet
 	//******************************Constructors*********************************************	
-	public JMOCore() throws FileNotFoundException, IOException{
+	private JMOCore() throws FileNotFoundException, IOException{
 		LOCAL_DIR = "local-JMO";
 		now = new Date();
 		PENDING_LOGS = (Set<File>) Collections.synchronizedSet(new HashSet<File> ());
@@ -139,5 +140,19 @@ public class JMOCore {
 		}
 		
 		return f;
+	}
+	/********************************************************************************************
+	 * Return the instance of JMOCore. Successive invocation of this method will return the same
+	 * instance.
+	 */
+	public synchronized static JMOCore getInstance(){
+		if(instance == null){
+			try {
+				return new JMOCore();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return instance;
 	}
 }
