@@ -37,11 +37,11 @@ public class LogsUploader implements Runnable{
 	public void uploadLogs () {
 		Iterator <File> i = PENDING_LOGS.iterator();
 		File f = null;
-		
+		os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
+
 		while (i.hasNext()){
 			 f = i.next();
-			 String plgname = f.getName().substring(0, (f.getName().indexOf('.') -1 ));
-			 os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
+			 String plgname = f.getParent();
 			 
 			 os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
 					 Payloads.create(f),

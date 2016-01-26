@@ -36,7 +36,7 @@ public class JMOCore {
 	private final Set<File> PENDING_LOGS; //Logs that haven't been synch to Swift yet
 	//******************************Constructors*********************************************	
 	private JMOCore() throws FileNotFoundException, IOException{
-		LOCAL_DIR = "local-JMO";
+		LOCAL_DIR = "logs";
 		now = new Date();
 		PENDING_LOGS = (Set<File>) Collections.synchronizedSet(new HashSet<File> ());
 		
