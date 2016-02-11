@@ -1,4 +1,5 @@
 package org.jmo;
+import java.io.File;
 import java.util.concurrent.BlockingQueue;
 
 abstract public class IfcPlugin implements Runnable{
@@ -7,11 +8,11 @@ abstract public class IfcPlugin implements Runnable{
 	// this is the reference to the BlockingQueue where all the plugins puts the output of their monitor activity.
 	protected BlockingQueue<JMOMessage> monitorQueue;
 	// fileCounter keeps track of the # of files written. Starts from 0.
-	private int fileCounter;
+	private File currentLog;
 	//*******************************Constructors************************************************
 	public IfcPlugin (BlockingQueue<JMOMessage> q) {
 		monitorQueue = q;
-		fileCounter = 1;
+		currentLog = null;
 	}
 	/********************************************************************************************
 	 * Use this method to set the plugin name and the rate at which call the monitoring() method.
@@ -25,10 +26,10 @@ abstract public class IfcPlugin implements Runnable{
 	public long getRate() {
 		return rate;
 	}
-	public void incFileCounter () { 
-		fileCounter++;
+	public void setCurrentLog (File x) { 
+		currentLog = x;
 	}
-	public int getFileCounter (){
-		return fileCounter;
+	public File getCurrentLog(){
+		return currentLog;
 	}
 }
