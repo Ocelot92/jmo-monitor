@@ -24,20 +24,20 @@ import org.openstack4j.api.OSClient;
 import org.openstack4j.openstack.OSFactory;
 
 public class JMOCore {
-	private static JMOCore instance = null;
+	private static final JMOCore INSTANCE = null;
 	private final String SWIFT_CONTAINER_NAME;
 	private final OSClient OS;
-	private PluginsManager pm;
-	private Date now;
-	private int SIZE_LIMIT; //max size of the log in bytes
+	private final PluginsManager PM;
+	private final Date NOW;
+	private final int LOG_SIZE; //max size of the log in bytes
 	private final String LOCAL_DIR;
 	private final int READINESS; //rate (in seconds) at which update logs on Swift
 	private final ScheduledExecutorService SCHED_EXEC_SERV;
-	private final Set<File> PENDING_LOGS; //Logs that haven't been synch to Swift yet
+	private final Set<File> PENDING_LOGS; //tracks logs not uploaded to Swift yet
 	//******************************Constructors*********************************************	
 	private JMOCore() throws FileNotFoundException, IOException{
 		LOCAL_DIR = "logs";
-		now = new Date();
+		NOW = new Date();
 		PENDING_LOGS = (Set<File>) Collections.synchronizedSet(new HashSet<File> ());
 		
 		Properties prop = new Properties();
@@ -51,9 +51,9 @@ public class JMOCore {
 					.tenantName(prop.getProperty("tenant"))
 					.authenticate();
 			SWIFT_CONTAINER_NAME = prop.getProperty("containerName");
-			pm = new PluginsManager(new File(prop.getProperty("pluginsDir")));
+			PM = new PluginsManager(new File(prop.getProperty("pluginsDir")));
 			READINESS = Integer.parseInt(prop.getProperty("readiness"));
-			SIZE_LIMIT = Integer.parseInt(prop.getProperty("logSize"));
+			LOG_SIZE = Integer.parseInt(prop.getProperty("logSize"));
 			SCHED_EXEC_SERV = Executors.newScheduledThreadPool(Integer.parseInt(prop.getProperty("poolSize")));
 		}
 	}
@@ -63,9 +63,9 @@ public class JMOCore {
 	 *schedules a task which uploads the last logs modified to Swift.
 	 */
 	public void startMonitoring (){
-		pm.loadPlugins();
-		pm.runPlugins(SCHED_EXEC_SERV);
-		BlockingQueue<JMOMessage> queue = pm.getResultsQueue();
+		PM.loadPlugins();
+		PM.runPlugins(SCHED_EXEC_SERV);
+		BlockingQueue<JMOMessage> queue = PM.getResultsQueue();
 		
 		try {
 			SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS.getAccess(), SWIFT_CONTAINER_NAME), 0, READINESS, TimeUnit.SECONDS);
@@ -101,8 +101,8 @@ public class JMOCore {
 			scan.useDelimiter("\\A");
 			str = scan.hasNext() ? scan.next() : ""; 
 		}
-		now.setTime(System.currentTimeMillis());
-		str = now + ": \n" + str + "\n";
+		NOW.setTime(System.currentTimeMillis());
+		str = NOW + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
 		return is;
 	}
@@ -119,7 +119,7 @@ public class JMOCore {
 		if(!f.exists()){
 			f.getParentFile().mkdirs();
 		}else{
-			if(f.length() > SIZE_LIMIT){
+			if(f.length() > LOG_SIZE){
 				msg.getPlg().incFileCounter();
 				f = new File(path);
 			}
@@ -146,13 +146,13 @@ public class JMOCore {
 	 * instance.
 	 */
 	public synchronized static JMOCore getInstance(){
-		if(instance == null){
+		if(INSTANCE == null){
 			try {
 				return new JMOCore();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		return instance;
+		return INSTANCE;
 	}
 }
