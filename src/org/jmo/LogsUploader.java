@@ -35,22 +35,23 @@ public class LogsUploader implements Runnable{
 	 * Uploads all the logs in the pendingLogs set to Swift. 
 	 */
 	public void uploadLogs () {
-		Iterator <File> i = PENDING_LOGS.iterator();
 		File f = null;
-		
 		//check if container already exists
 		if ( os.objectStorage().containers().getMetadata(SWIFT_CONTAINER_NAME).get("X-Timestamp") == null )
 			os.objectStorage().containers().create(SWIFT_CONTAINER_NAME);
 		//upload all the Files in PENDING_LOGS to Swift
-		while (i.hasNext()){
-			 f = i.next();
-			 String plgname = f.getParent();
-			 
-			 os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
-					 Payloads.create(f),
-					 ObjectPutOptions.create()
-					 .path('/' + HOSTNAME + '/' + plgname));
-			 i.remove();
+		synchronized (PENDING_LOGS) {
+			Iterator <File> i = PENDING_LOGS.iterator();
+			while (i.hasNext()){
+				f = i.next();
+				String plgname = f.getParent();
+
+				os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
+						Payloads.create(f),
+						ObjectPutOptions.create()
+						.path('/' + HOSTNAME + '/' + plgname));
+				i.remove();
+			}
 		}
 	}
 	@Override
