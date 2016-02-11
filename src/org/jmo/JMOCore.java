@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -101,8 +102,9 @@ public class JMOCore {
 			scan.useDelimiter("\\A");
 			str = scan.hasNext() ? scan.next() : ""; 
 		}
+		SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
 		NOW.setTime(System.currentTimeMillis());
-		str = NOW + ": \n" + str + "\n";
+		str = sdt.format(NOW) + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
 		return is;
 	}
