@@ -19,7 +19,13 @@ public class LogsUploader implements Runnable{
 	private final String SWIFT_CONTAINER_NAME;
 	private Access accessClnt;
 	private final String HOSTNAME;
-	//************************************Constructors********************************************
+	/********************************************************************************************
+	 * Creates a LogsUploader which uploads locally modified/created logs to Swift at rate READINESS.
+	 * @param logsSet - a Set representing the logs modified or just created.
+	 * @param acs - an Access object from OSClient.
+	 * @param container - a Swift container name.
+	 * @throws IOException - If an I/O error occurs regarding /bin/hostname
+	 */ 
 	public LogsUploader(Set <File> logsSet, Access acs, String container) throws IOException {
 		PENDING_LOGS = logsSet;
 		SWIFT_CONTAINER_NAME = container;
@@ -54,6 +60,9 @@ public class LogsUploader implements Runnable{
 			}
 		}
 	}
+	/********************************************************************************************
+	 * Gets the OSClient from OSFactory and call the method uploadLogs().
+	 */
 	@Override
 	public void run() {
 		os = OSFactory.clientFromAccess(accessClnt);

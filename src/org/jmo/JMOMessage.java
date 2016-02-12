@@ -4,21 +4,22 @@ import java.io.InputStream;
 public class JMOMessage {
 	private InputStream payload;
 	private IfcPlugin plg;
-	//*********************************Constructors**********************************************
+	
 	public JMOMessage (InputStream is, IfcPlugin p){
 		payload = is;
 		plg = p;
 	}
-	//*****************************Accessor Methods**********************************************
-	public void setPlg (IfcPlugin x) {
-		plg = x;
-	}
+	/********************************************************************************************
+	 * Returns the plugin.
+	 * @return The plugin who created this JMOMessage
+	 */
 	public IfcPlugin getPlg () {
 		return plg;
 	}
-	public void setPayload (InputStream x) {
-		payload = x;
-	}
+	/********************************************************************************************
+	 * Returns the payload of the JMOMessage.
+	 * @return The InputStream produced by the plugin execution.
+	 */
 	public InputStream getPayload () {
 		return payload;
 	}

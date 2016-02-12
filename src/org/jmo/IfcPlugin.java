@@ -9,7 +9,10 @@ abstract public class IfcPlugin implements Runnable{
 	protected BlockingQueue<JMOMessage> monitorQueue;
 	// fileCounter keeps track of the # of files written. Starts from 0.
 	private File currentLog;
-	//*******************************Constructors************************************************
+	/********************************************************************************************
+	 * Creates a IfcPlugin which represents a JMO plugin.
+	 * @param q - The BlockingQueue where the plugins puts its JMOMessage objects.
+	 */
 	public IfcPlugin (BlockingQueue<JMOMessage> q) {
 		monitorQueue = q;
 		currentLog = null;
@@ -19,16 +22,31 @@ abstract public class IfcPlugin implements Runnable{
 	 * Note: rate - seconds. It must be greater than 0.
 	 */
 	abstract public void initPlugin ();
-	//*******************************Accessor Methods********************************************
+	/********************************************************************************************
+	 * Return the plugin's name.
+	 * @return a String containing the plugin's name.
+	 */
 	public String getName() {
 		return name;
 	}
+	/********************************************************************************************
+	 * Returns the frequency with which the plugin it's executed.
+	 * @return Returns the frequency in seconds with which the plugin it's executed.
+	 */
 	public long getRate() {
 		return rate;
 	}
+	/********************************************************************************************
+	 * Sets the current log file of the plugin to x.
+	 * @param x - a File representing the last log created by the plugin.
+	 */
 	public void setCurrentLog (File x) { 
 		currentLog = x;
 	}
+	/********************************************************************************************
+	 * Returns the current log file.
+	 * @return The last log created by the plugin.
+	 */
 	public File getCurrentLog(){
 		return currentLog;
 	}
