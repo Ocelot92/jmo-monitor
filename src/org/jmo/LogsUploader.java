@@ -2,9 +2,7 @@ package org.jmo;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
-import java.util.Scanner;
 import java.util.Set;
 
 import org.openstack4j.api.OSClient;
@@ -24,23 +22,18 @@ public class LogsUploader implements Runnable{
 	 * @param logsSet - a Set representing the logs modified or just created.
 	 * @param acs - an Access object from OSClient.
 	 * @param container - a Swift container name.
-	 * @throws IOException - If an I/O error occurs regarding /bin/hostname
+	 * @throws IOException - If an I/O error occurs.
 	 */ 
-	public LogsUploader(Set <File> logsSet, Access acs, String container) throws IOException {
+	public LogsUploader(Set <File> logsSet, Access acs, String container, String host) throws IOException {
+		HOSTNAME = host;
 		PENDING_LOGS = logsSet;
 		SWIFT_CONTAINER_NAME = container;
 		accessClnt = acs;
-		InputStream is = Runtime.getRuntime().exec("/bin/hostname").getInputStream();
-		
-		try(Scanner scan = new Scanner(is)) {
-			scan.useDelimiter("\\A");
-			HOSTNAME = scan.hasNext() ? scan.next().trim() : ""; 
-		}
 	}
 	/********************************************************************************************
 	 * Uploads all the logs in the pendingLogs set to Swift. 
 	 */
-	public void uploadLogs () {
+	private void uploadLogs () {
 		File f = null;
 		//check if container already exists
 		if ( os.objectStorage().containers().getMetadata(SWIFT_CONTAINER_NAME).get("X-Timestamp") == null )

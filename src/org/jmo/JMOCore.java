@@ -35,6 +35,7 @@ public class JMOCore {
 	private final int READINESS; //rate (in seconds) at which update logs on Swift
 	private final ScheduledExecutorService SCHED_EXEC_SERV;
 	private final Set<File> PENDING_LOGS; //tracks logs not uploaded to Swift yet
+	private final String HOSTNAME;
 	/********************************************************************************************
 	 * Creates a JMOCore and initializes it by loading the properties in a JMO-config.properties
 	 * file. This file must be in the same folder of the Java Application.
@@ -47,6 +48,12 @@ public class JMOCore {
 		LOCAL_DIR = "logs";
 		NOW = new Date();
 		PENDING_LOGS = (Set<File>) Collections.synchronizedSet(new HashSet<File> ());
+		
+		InputStream hostStream = Runtime.getRuntime().exec("/bin/hostname").getInputStream();
+		try(Scanner scan = new Scanner(hostStream)) {
+			scan.useDelimiter("\\A");
+			HOSTNAME = scan.hasNext() ? scan.next().trim() : ""; 
+		}
 		
 		Properties prop = new Properties();
 		//load parameters from config file
@@ -76,7 +83,7 @@ public class JMOCore {
 		BlockingQueue<JMOMessage> queue = PM.getResultsQueue();
 		
 		try {
-			SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS.getAccess(), SWIFT_CONTAINER_NAME), 0, READINESS, TimeUnit.SECONDS);
+			SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS.getAccess(), SWIFT_CONTAINER_NAME, HOSTNAME), 0, READINESS, TimeUnit.SECONDS);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -160,7 +167,7 @@ public class JMOCore {
 		String plgName = msg.getPlg().getName();
 		NOW.setTime(System.currentTimeMillis());
 		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm_");
-		f = new File (LOCAL_DIR + File.separator + plgName + File.separator+ sdt.format(NOW)  +plgName +".txt");
+		f = new File (LOCAL_DIR + File.separator + plgName + File.separator+ sdt.format(NOW) +plgName + " " + HOSTNAME +".txt");
 		return f;
 	}
 	/********************************************************************************************
