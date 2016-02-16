@@ -118,7 +118,7 @@ public class JMOCore {
 			scan.useDelimiter("\\A");
 			str = scan.hasNext() ? scan.next() : ""; 
 		}
-		SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm");
 		NOW.setTime(System.currentTimeMillis());
 		str = sdt.format(NOW) + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
