@@ -3,7 +3,7 @@ import java.io.File;
 import java.util.concurrent.BlockingQueue;
 
 abstract public class IfcPlugin implements Runnable{
-	protected String name;
+	private final String NAME;
 	protected int rate;
 	// this is the reference to the BlockingQueue where all the plugins puts the output of their monitor activity.
 	protected BlockingQueue<JMOMessage> monitorQueue;
@@ -13,12 +13,13 @@ abstract public class IfcPlugin implements Runnable{
 	 * Creates a IfcPlugin which represents a JMO plugin.
 	 * @param q - The BlockingQueue where the plugins puts its JMOMessage objects.
 	 */
-	public IfcPlugin (BlockingQueue<JMOMessage> q) {
+	public IfcPlugin (BlockingQueue<JMOMessage> q, String name) {
 		monitorQueue = q;
 		currentLog = null;
+		NAME = name;
 	}
 	/********************************************************************************************
-	 * Use this method to set the plugin name and the rate at which call the monitoring() method.
+	 * Use this method to set the plugin's rate at which call the monitoring() method.
 	 * Note: rate - seconds. It must be greater than 0.
 	 */
 	abstract public void initPlugin ();
@@ -27,7 +28,7 @@ abstract public class IfcPlugin implements Runnable{
 	 * @return a String containing the plugin's name.
 	 */
 	public String getName() {
-		return name;
+		return NAME;
 	}
 	/********************************************************************************************
 	 * Returns the frequency with which the plugin it's executed.
