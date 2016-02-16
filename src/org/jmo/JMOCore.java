@@ -154,7 +154,8 @@ public class JMOCore {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		if (msg.getPlg().getCurrentLog() == null ||  f.compareTo(msg.getPlg().getCurrentLog()) !=0)
+			msg.getPlg().setCurrentLog(f);
 		return f;
 	}
 	/********************************************************************************************
@@ -167,7 +168,7 @@ public class JMOCore {
 		String plgName = msg.getPlg().getName();
 		NOW.setTime(System.currentTimeMillis());
 		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm_");
-		f = new File (LOCAL_DIR + File.separator + plgName + File.separator+ sdt.format(NOW) +plgName + " " + HOSTNAME +".txt");
+		f = new File (LOCAL_DIR + File.separator + plgName + File.separator+ sdt.format(NOW) +plgName + "_" + HOSTNAME +".txt");
 		return f;
 	}
 	/********************************************************************************************
