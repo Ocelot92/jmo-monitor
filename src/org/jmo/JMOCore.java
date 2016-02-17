@@ -118,7 +118,7 @@ public class JMOCore {
 			scan.useDelimiter("\\A");
 			str = scan.hasNext() ? scan.next() : ""; 
 		}
-		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm");
+		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm:ss");
 		NOW.setTime(System.currentTimeMillis());
 		str = sdt.format(NOW) + ": \n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
@@ -167,7 +167,7 @@ public class JMOCore {
 		File f;
 		String plgName = msg.getPlg().getName();
 		NOW.setTime(System.currentTimeMillis());
-		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm_");
+		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm:ss_");
 		f = new File (LOCAL_DIR + File.separator + plgName + File.separator+ sdt.format(NOW) +plgName + "_" + HOSTNAME +".txt");
 		return f;
 	}
