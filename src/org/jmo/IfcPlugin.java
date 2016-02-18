@@ -1,5 +1,6 @@
 package org.jmo;
 import java.io.File;
+import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 
 abstract public class IfcPlugin implements Runnable{
@@ -16,6 +17,18 @@ abstract public class IfcPlugin implements Runnable{
 		monitorQueue = q;
 		currentLog = null;
 		NAME = name;
+	}
+	/********************************************************************************************
+	 * Create a JMOMessage with the given InputStream and adds it to the monitorQueue.
+	 * @param is - The InputStream containing the information to log.
+	 */
+	public void sendJMOMessage(InputStream is){
+		JMOMessage node = new JMOMessage (is, this);
+		try {
+			monitorQueue.put(node);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	/********************************************************************************************
 	 * Use this method to set the plugin's rate at which call the monitoring() method.
