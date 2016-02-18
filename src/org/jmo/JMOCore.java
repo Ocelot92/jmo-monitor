@@ -120,7 +120,7 @@ public class JMOCore {
 		}
 		SimpleDateFormat sdt = new SimpleDateFormat("yy-MM-dd_HH:mm:ss");
 		NOW.setTime(System.currentTimeMillis());
-		str = sdt.format(NOW) + ": \n" + str + "\n";
+		str = sdt.format(NOW) + ":\n" + str + "\n";
 		is = new ByteArrayInputStream(str.getBytes());
 		return is;
 	}
