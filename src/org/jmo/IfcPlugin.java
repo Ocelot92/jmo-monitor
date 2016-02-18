@@ -7,8 +7,7 @@ abstract public class IfcPlugin implements Runnable{
 	protected int rate;
 	// this is the reference to the BlockingQueue where all the plugins puts the output of their monitor activity.
 	protected BlockingQueue<JMOMessage> monitorQueue;
-	// fileCounter keeps track of the # of files written. Starts from 0.
-	private File currentLog;
+	private File currentLog;//the current log file used by the plugin.
 	/********************************************************************************************
 	 * Creates a IfcPlugin which represents a JMO plugin.
 	 * @param q - The BlockingQueue where the plugins puts its JMOMessage objects.
