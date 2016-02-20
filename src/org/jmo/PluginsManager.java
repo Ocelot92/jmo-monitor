@@ -30,7 +30,6 @@ public class PluginsManager {
 	 * @param schdExecServ - a ScheduledExecutorService
 	 */
 	public void runPlugins (ScheduledExecutorService schdExecServ) {
-		//creates a task for each plugin and schedules it
 		Iterator <IfcPlugin> i = PLUGINS.iterator();
 		IfcPlugin aux = null;
 		while (i.hasNext()){
