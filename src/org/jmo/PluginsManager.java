@@ -1,11 +1,11 @@
 package org.jmo;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +21,9 @@ public class PluginsManager {
 	 */
 	public PluginsManager (File dir){
 		directory = dir;
-		PLUGINS = new ArrayList<IfcPlugin> (); //default size: 10
+		PLUGINS = new LinkedList<IfcPlugin> ();
 		QUEUE_CAPACITY = 10; //capacity of the BlockingQueue
-		RESULTS_QUEUE = new ArrayBlockingQueue<JMOMessage>(QUEUE_CAPACITY);
+		RESULTS_QUEUE = new LinkedBlockingQueue<JMOMessage>(QUEUE_CAPACITY);
 	}
 	/********************************************************************************************
 	 * Schedules the plugins for execution at their specific rates.
