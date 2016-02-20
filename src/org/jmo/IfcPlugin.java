@@ -31,11 +31,6 @@ abstract public class IfcPlugin implements Runnable{
 		}
 	}
 	/********************************************************************************************
-	 * Use this method to set the plugin's rate at which call the monitoring() method.
-	 * Note: rate - seconds. It must be greater than 0.
-	 */
-	abstract public void initPlugin ();
-	/********************************************************************************************
 	 * Return the plugin's name.
 	 * @return a String containing the plugin's name.
 	 */

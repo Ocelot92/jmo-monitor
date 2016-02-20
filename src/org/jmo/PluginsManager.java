@@ -62,10 +62,12 @@ public class PluginsManager {
 					//check if the class implements IfcPlugin
 					if (clsLoaded != null && IfcPlugin.class.isAssignableFrom(clsLoaded) ){
 						try {
-							IfcPlugin plg = (IfcPlugin) clsLoaded.getDeclaredConstructor(BlockingQueue.class, String.class).newInstance(RESULTS_QUEUE, clsLoaded.getName());
-							plg.initPlugin();
+							IfcPlugin plg = (IfcPlugin) clsLoaded
+									.getDeclaredConstructor(BlockingQueue.class, String.class)
+									.newInstance(RESULTS_QUEUE, clsLoaded.getName());
 							PLUGINS.add(plg);
-						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+						} catch (InstantiationException | IllegalAccessException
+							| IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 							e.printStackTrace();
 						}
 					}
