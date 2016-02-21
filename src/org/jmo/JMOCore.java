@@ -83,7 +83,8 @@ public class JMOCore {
 		BlockingQueue<JMOMessage> queue = PM.getResultsQueue();
 		
 		try {
-			SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS.getAccess(), SWIFT_CONTAINER_NAME, HOSTNAME), 0, READINESS, TimeUnit.SECONDS);
+			SCHED_EXEC_SERV.scheduleAtFixedRate(new LogsUploader(PENDING_LOGS, OS.getAccess(), SWIFT_CONTAINER_NAME, HOSTNAME)
+					, 0, READINESS, TimeUnit.SECONDS);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -95,8 +96,8 @@ public class JMOCore {
 
 		try(Reader isr = new InputStreamReader (System.in)){
 			do{
-				f = storeInLocal(queue.take()); //updates/creates the the log and returns the File
-				PENDING_LOGS.add(f); //add the newly created/updated log to the pending logs
+				f = storeInLocal(queue.take());
+				PENDING_LOGS.add(f);
 			}while (!isr.ready() || (isr.ready() && isr.read() != 'q'));
 
 		} catch (InterruptedException e) {
@@ -135,9 +136,11 @@ public class JMOCore {
 		if(f == null){
 			f = createLog(msg);
 			f.getParentFile().mkdirs();
+			msg.getPlg().setCurrentLog(f);
 		}else{
 			if(f.length() > LOG_SIZE){
 				f = createLog(msg);
+				msg.getPlg().setCurrentLog(f);
 			}
 		}
 		
@@ -154,8 +157,6 @@ public class JMOCore {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if (msg.getPlg().getCurrentLog() == null ||  f.compareTo(msg.getPlg().getCurrentLog()) !=0)
-			msg.getPlg().setCurrentLog(f);
 		return f;
 	}
 	/********************************************************************************************
