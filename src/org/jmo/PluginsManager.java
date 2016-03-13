@@ -10,13 +10,22 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class PluginsManager {
+	
 	private File directory;
+	
 	private List <IfcPlugin> PLUGINS;
-	//The outputs of the plugins' scripts are stored in this queue waiting for being "consumed" by the os client
-	private final BlockingQueue <JMOMessage> RESULTS_QUEUE; 
+	
+	/**
+	 * The BlockingQueue where plugins sends their JMOMessage.
+	 */
+	private final BlockingQueue <JMOMessage> RESULTS_QUEUE;
+	
 	private final int QUEUE_CAPACITY;
-	/********************************************************************************************
+	
+	/* -- Constructors -- */
+	/**
 	 * Creates a PluginsManager pointing at the directory dir.
+	 * 
 	 * @param dir - plugins' directory
 	 */
 	public PluginsManager (File dir){
@@ -25,8 +34,10 @@ public class PluginsManager {
 		QUEUE_CAPACITY = 10; //capacity of the BlockingQueue
 		RESULTS_QUEUE = new LinkedBlockingQueue<JMOMessage>(QUEUE_CAPACITY);
 	}
-	/********************************************************************************************
+	
+	/**
 	 * Schedules the plugins for execution at their specific rates.
+	 * 
 	 * @param schdExecServ - a ScheduledExecutorService
 	 */
 	public void runPlugins (ScheduledExecutorService schdExecServ) {
@@ -38,14 +49,13 @@ public class PluginsManager {
 		}
 	}
 
-	/********************************************************************************************
+	/**
 	 *This method uses the PluginClassLoader to load all the class files - specified in the directory
 	 * field - which extends the IfcPlugin abstract class. Once loaded the plugins are added in the plugins List.
 	 */
 	public void loadPlugins (){
 		File dir = new File (System.getProperty("user.dir") + File.separator + directory);
 		ClassLoader cl = new PluginClassLoader(dir);
-
 		//listing all dir's files
 		if (dir.exists() && dir.isDirectory()) {
 			String files []= dir.list();
@@ -76,15 +86,20 @@ public class PluginsManager {
 			System.out.println("Wrong plugins path!");
 		}
 	}
-	/********************************************************************************************
+	
+	/* -- Accessor Methods -- */
+	/**
 	 * Returns the thread-safe queue where plugins send their outputs.
+	 * 
 	 * @return the BlockingQueue where plugins puts their JMOMessages.
 	 */
 	public BlockingQueue<JMOMessage> getResultsQueue () {
 		return RESULTS_QUEUE;
 	}
-	/********************************************************************************************
+	
+	/**
 	 * Returns the list of the plugins.
+	 * 
 	 * @return The List of the IfcPlugin objects.
 	 */
 	public List<IfcPlugin> getPlugins(){

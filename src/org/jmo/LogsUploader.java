@@ -12,12 +12,19 @@ import org.openstack4j.model.storage.object.options.ObjectPutOptions;
 import org.openstack4j.openstack.OSFactory;
 
 public class LogsUploader implements Runnable{
+	
 	private final Set <File> PENDING_LOGS;
+	
 	private OSClient os;
+	
 	private final String SWIFT_CONTAINER_NAME;
+	
 	private Access accessClnt;
+	
 	private final String HOSTNAME;
-	/********************************************************************************************
+	
+	/* -- Construcctors -- */
+	/**
 	 * Creates a LogsUploader which uploads locally modified/created logs to Swift at rate READINESS.
 	 * @param logsSet - a Set representing the logs modified or just created.
 	 * @param acs - an Access object from OSClient.
@@ -30,7 +37,9 @@ public class LogsUploader implements Runnable{
 		SWIFT_CONTAINER_NAME = container;
 		accessClnt = acs;
 	}
-	/********************************************************************************************
+	
+	/* -- General Methods -- */
+	/**
 	 * Uploads all the logs in the pendingLogs set to Swift. 
 	 */
 	private void uploadLogs () {
@@ -44,7 +53,6 @@ public class LogsUploader implements Runnable{
 			while (i.hasNext()){
 				f = i.next();
 				String plgname = f.getParent();
-
 				os.objectStorage().objects().put(SWIFT_CONTAINER_NAME, f.getName(),
 						Payloads.create(f),
 						ObjectPutOptions.create()
@@ -53,7 +61,8 @@ public class LogsUploader implements Runnable{
 			}
 		}
 	}
-	/********************************************************************************************
+	
+	/**
 	 * Gets the OSClient from OSFactory and call the method uploadLogs().
 	 */
 	@Override

@@ -6,15 +6,20 @@ import java.io.IOException;
 
 
 public class PluginClassLoader extends ClassLoader {
+	
 	File directory;
-	/********************************************************************************************
+	
+	/* -- Constructors -- */
+	/**
 	 * Creates a PluginClassLoader. It's used for loading the plugins at runtime.
 	 * @param dir - the directory where plugin's .class files are stored.
 	 */
 	public PluginClassLoader (File dir){
 		directory = dir;
 	}
-	/********************************************************************************************
+	
+	/* -- General Methods -- */
+	/**
 	 * Searches in the plugins directory the class names classname.
 	 * @param classname - The name of the class to find
 	 * @return The Class found or null.
